@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=south": { "model": "entombed:block/tomb" },
+    "facing=west":  { "model": "entombed:block/tomb", "y": 90 },
+    "facing=north": { "model": "entombed:block/tomb", "y": 180 },
+    "facing=east":  { "model": "entombed:block/tomb", "y": 270 }
+  }
+}

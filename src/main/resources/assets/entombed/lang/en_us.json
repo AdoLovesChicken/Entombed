@@ -1,5 +1,7 @@
 {
-  "itemGroup.entombed": "Example Mod Tab",
-  "block.entombed.example_block": "Example Block",
-  "item.entombed.example_item": "Example Item"
+  "block.entombed.tomb": "Tomb",
+  "entombed.tomb_owner": "Owner: %s",
+  "entombed.tomb_unclaimed": "Empty",
+  "config.jade.plugin_entombed.tomb_owner": "Tomb Owner",
+  "config.jade.plugin_entombed.tomb_unclaimed": "Unknown Tomb Owner"
 }
