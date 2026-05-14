@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
@@ -25,8 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.stream.Stream;
-
-import static java.nio.file.Files.walk;
 
 public class HenkelMaxMigrator {
     public static void migrate(MinecraftServer server) {
@@ -59,8 +58,7 @@ public class HenkelMaxMigrator {
             BlockPos gravePos = BlockPos.containing(posX, posY, posZ);
             BlockState blockAtPos = level.getBlockState(gravePos);
 
-            if (blockAtPos.is(BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath("gravestone", "gravestone")))
-                    || blockAtPos.isAir()) {
+            if (!blockAtPos.is(ModBlocks.TOMB.get())) {
                 level.setBlock(gravePos, ModBlocks.TOMB.get().defaultBlockState().setValue(GravestoneBlock.FACING, Direction.NORTH), 3);
                 if (level.getBlockEntity(gravePos) instanceof GravestoneBlockEntity grave) {
                     grave.setOwnerUUID(ownerUUID);
@@ -68,6 +66,10 @@ public class HenkelMaxMigrator {
                     loadInventory(mainInventory, 0, grave, level);
                     loadInventory(armorInventory, 36, grave, level);
                     loadInventory(offHandInventory, 40, grave, level);
+                    if (ModList.get().isLoaded("curios")) {
+                        HenkelMaxCuriosMigrator.migrate(deathData.getList("Items", Tag.TAG_COMPOUND), grave, level);
+                    }
+
                     grave.setChanged();
                     Files.move(datFile, datFile.resolveSibling(datFile.getFileName() + ".migrated"));
                 }

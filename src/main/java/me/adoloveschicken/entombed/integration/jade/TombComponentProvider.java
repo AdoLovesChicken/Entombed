@@ -1,16 +1,16 @@
 package me.adoloveschicken.entombed.integration.jade;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.component.ResolvableProfile;
 import com.mojang.authlib.properties.PropertyMap;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.phys.Vec2;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;

@@ -1,6 +1,5 @@
 package me.adoloveschicken.entombed.block;
 
-import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.integration.curios.CuriosHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -12,7 +11,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -86,6 +84,10 @@ public class GravestoneBlockEntity extends BlockEntity {
 
     public void setItemInSlot(int slotIndex, ItemStack itemStack) {
         itemStacks.set(slotIndex, itemStack);
+    }
+
+    public CompoundTag getCuriosTag() {
+        return curiosTag;
     }
 
     @Override
