@@ -37,7 +37,17 @@ public enum TombComponentProvider implements IBlockComponentProvider, IServerDat
                 iTooltip.append(Component.translatable("entombed.tomb_unclaimed"));
             } else {
                 ItemStack ownerSkull = new ItemStack(Items.PLAYER_HEAD);
-                ownerSkull.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(serverData.getString("Owner")), Optional.of(serverData.getUUID("OwnerUUID")), new PropertyMap()));
+                if (serverData.contains("OwnerUUID")) {
+                    ownerSkull.set(DataComponents.PROFILE, new ResolvableProfile(
+                            Optional.of(serverData.getString("Owner")),
+                            Optional.of(serverData.getUUID("OwnerUUID")),
+                            new PropertyMap()));
+                } else {
+                    ownerSkull.set(DataComponents.PROFILE, new ResolvableProfile(
+                            Optional.of(serverData.getString("Owner")),
+                            Optional.empty(),
+                            new PropertyMap()));
+                }
                 IElement icon = elements.item(ownerSkull, 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
                 icon.message(null);
                 iTooltip.add(icon);
@@ -64,6 +74,11 @@ public enum TombComponentProvider implements IBlockComponentProvider, IServerDat
             String name = profile.get().getName();
             data.putString("Owner", name);
             data.putUUID("OwnerUUID", tomb.getOwnerUUID());
+        } else {
+            String storedName = tomb.getOwnerName();
+            if (storedName != null && !storedName.isEmpty()) {
+                data.putString("Owner", storedName);
+            }
         }
     }
 }

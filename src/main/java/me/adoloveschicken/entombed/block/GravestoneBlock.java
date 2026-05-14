@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -53,6 +54,14 @@ public class GravestoneBlock extends BaseEntityBlock {
                 if (player.getUUID().equals(grave.getOwnerUUID())) {
                     grave.returnItems(player);
                     return InteractionResult.SUCCESS;
+                } else if (player instanceof ServerPlayer serverPlayer) {
+                    if (serverPlayer.hasPermissions(2)) {
+                        grave.returnItems(player);
+                        player.displayClientMessage(Component.literal("You have stolen the items from another player's tomb")
+                                        .withColor(0xFF746C)
+                                , true);
+                        return InteractionResult.SUCCESS;
+                    }
                 } else {
                     if (level instanceof ServerLevel serverLevel) {
                         serverLevel.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.3, 0.3, 0.3, 0.05);

@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import me.adoloveschicken.entombed.block.ModBlockEntities;
 import me.adoloveschicken.entombed.block.ModBlocks;
 import me.adoloveschicken.entombed.event.DeathHandler;
+import me.adoloveschicken.entombed.integration.henkelmax.HenkelMaxMigrator;
 import me.adoloveschicken.entombed.item.ModItems;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -27,6 +28,7 @@ public class Entombed {
         ModItems.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         DeathHandler.register();
+        HenkelMaxMigrator.register();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

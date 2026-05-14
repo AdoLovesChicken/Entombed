@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,6 +23,7 @@ public class GravestoneBlockEntity extends BlockEntity {
 
     private NonNullList<ItemStack> itemStacks = NonNullList.withSize(41, ItemStack.EMPTY);
     private UUID ownerUUID;
+    private String ownerName;
     private CompoundTag curiosTag = new CompoundTag();
 
     private static final CuriosHandler CURIOS_HANDLER = new CuriosHandler();
@@ -70,11 +72,30 @@ public class GravestoneBlockEntity extends BlockEntity {
         return ownerUUID;
     }
 
+    public void setOwnerUUID(UUID newOwnerUUID) {
+        ownerUUID = newOwnerUUID;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String newOwnerName) {
+        ownerName = newOwnerName;
+    }
+
+    public void setItemInSlot(int slotIndex, ItemStack itemStack) {
+        itemStacks.set(slotIndex, itemStack);
+    }
+
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         if (tag.hasUUID("OwnerUUID")) {
             ownerUUID = tag.getUUID("OwnerUUID");
+        }
+        if (tag.contains("OwnerName")) {
+            ownerName = tag.getString("OwnerName");
         }
         if (tag.contains("CurioItems")) {
             curiosTag = tag.getCompound("CurioItems");
@@ -87,6 +108,9 @@ public class GravestoneBlockEntity extends BlockEntity {
         super.saveAdditional(tag, registries);
         if (ownerUUID != null) {
             tag.putUUID("OwnerUUID", ownerUUID);
+        }
+        if (ownerName != null) {
+            tag.putString("OwnerName", ownerName);
         }
         tag.put("CurioItems", curiosTag);
         ContainerHelper.saveAllItems(tag, itemStacks, registries);
