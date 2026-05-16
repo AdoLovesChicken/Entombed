@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.GameRules;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -20,6 +21,9 @@ public class DeathHandler {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event){
         if (event.getEntity() instanceof ServerPlayer player) {
+            if (player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+                return;
+            }
             ServerLevel level = player.serverLevel();
             BlockPos pos = player.blockPosition();
             Direction facing = player.getDirection().getOpposite();
@@ -33,8 +37,11 @@ public class DeathHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerDrops(LivingDropsEvent event){
-        if (event.getEntity() instanceof ServerPlayer) {
+    public static void onPlayerDrops(LivingDropsEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            if (player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+                return;
+            }
             event.setCanceled(true);
         }
     }
