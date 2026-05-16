@@ -3,6 +3,7 @@ package me.adoloveschicken.entombed.event;
 import me.adoloveschicken.entombed.block.GravestoneBlock;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.block.ModBlocks;
+import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -12,6 +13,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameRules;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
@@ -24,8 +26,9 @@ public class DeathHandler {
             if (player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
                 return;
             }
+
             ServerLevel level = player.serverLevel();
-            BlockPos pos = player.blockPosition();
+            BlockPos pos = getGravePosition(player);
             Direction facing = player.getDirection().getOpposite();
             level.setBlock(pos, ModBlocks.TOMB.get().defaultBlockState().setValue(GravestoneBlock.FACING, facing), 3);
             if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestoneBlockEntity) {
@@ -44,6 +47,13 @@ public class DeathHandler {
             }
             event.setCanceled(true);
         }
+    }
+
+    private static BlockPos getGravePosition(ServerPlayer player) {
+        if (ModList.get().isLoaded("sable")) {
+            return SableGravePositionHandler.getPosition(player);
+        }
+        return player.blockPosition();
     }
 
     public static void register() {

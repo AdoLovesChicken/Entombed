@@ -13,21 +13,18 @@ public class HenkelMaxCuriosMigrator {
         ListTag curiosTagList = new ListTag();
         for (int i = 0; i < items.size(); i++) {
             CompoundTag itemEntry = items.getCompound(i);
-            CompoundTag curiosEntry = new CompoundTag();
             int stackSize = itemEntry.getInt("count");
             String itemID = itemEntry.getString("id");
-            if (itemEntry.contains("components")) {
-                CompoundTag components = itemEntry.getCompound("components");
-                if (components.contains("baguettelib:curio_slot_data")) {
-                    CompoundTag slotData = components.getCompound("baguettelib:curio_slot_data");
-                    String slotType = slotData.getString("slotType");
-                    int slotIndex = slotData.getInt("slotIndex");
-                    ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemID)), stackSize);
-                    curiosEntry.putString("SlotType", slotType);
-                    curiosEntry.putInt("SlotIndex", slotIndex);
-                    curiosEntry.put("Item", itemStack.save(level.registryAccess()));
-                    curiosTagList.add(curiosEntry);
-                }
+            CompoundTag slotData = itemEntry.getCompound("components").getCompound("baguettelib:curio_slot_data");
+            if (!slotData.isEmpty()) {
+                CompoundTag curiosEntry = new CompoundTag();
+                String slotType = slotData.getString("slotType");
+                int slotIndex = slotData.getInt("slotIndex");
+                ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemID)), stackSize);
+                curiosEntry.putString("SlotType", slotType);
+                curiosEntry.putInt("SlotIndex", slotIndex);
+                curiosEntry.put("Item", itemStack.save(level.registryAccess()));
+                curiosTagList.add(curiosEntry);
             }
         }
         grave.getCuriosTag().put("CurioItems", curiosTagList);

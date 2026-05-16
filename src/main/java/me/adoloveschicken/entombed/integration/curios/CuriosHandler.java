@@ -24,10 +24,10 @@ public class CuriosHandler implements IAccessoryHandler{
                 ListTag curiosTagList = new ListTag();
                 for (Map.Entry<String, ICurioStacksHandler> entry : curiosMap.entrySet()) {
                     String slotType = entry.getKey();
-                    ICurioStacksHandler itemType = entry.getValue();
-                    IItemHandler items = itemType.getStacks();
-                    for (int i = 0; i < items.getSlots(); i++) {
-                        ItemStack item = items.getStackInSlot(i);
+                    ICurioStacksHandler stacksHandler = entry.getValue();
+                    IItemHandler stacks = stacksHandler.getStacks();
+                    for (int i = 0; i < stacks.getSlots(); i++) {
+                        ItemStack item = stacks.getStackInSlot(i);
                         if (!item.isEmpty()) {
                             CompoundTag itemEntry = new CompoundTag();
                             itemEntry.putString("SlotType", slotType);
@@ -54,6 +54,11 @@ public class CuriosHandler implements IAccessoryHandler{
                     String slotType = itemEntry.getString("SlotType");
                     int slotIndex = itemEntry.getInt("SlotIndex");
                     ItemStack item = ItemStack.parseOptional(player.level().registryAccess(), itemEntry.getCompound("Item"));
+
+                    ICurioStacksHandler stacksHandler = handler.getCurios().get(slotType);
+                    if (stacksHandler != null) {
+                        stacksHandler.getStacks().setStackInSlot(slotIndex, item);
+                    }
                     handler.getCurios().get(slotType).getStacks().setStackInSlot(slotIndex, item);
                 }
             }

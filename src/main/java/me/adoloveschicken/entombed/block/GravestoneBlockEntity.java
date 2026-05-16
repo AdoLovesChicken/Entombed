@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Clearable;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -17,14 +18,14 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.UUID;
 
-public class GravestoneBlockEntity extends BlockEntity {
+public class GravestoneBlockEntity extends BlockEntity implements Clearable {
 
-    private NonNullList<ItemStack> itemStacks = NonNullList.withSize(41, ItemStack.EMPTY);
+    public static final int INVENTORY_SIZE = 41;
+    private NonNullList<ItemStack> itemStacks = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
     private UUID ownerUUID;
     private String ownerName;
     private CompoundTag curiosTag = new CompoundTag();
-
-    private static final CuriosHandler CURIOS_HANDLER = new CuriosHandler();
+    private final CuriosHandler curiosHandler = new CuriosHandler();
 
 
     public GravestoneBlockEntity(BlockPos pos, BlockState blockState) {
@@ -32,7 +33,7 @@ public class GravestoneBlockEntity extends BlockEntity {
     }
 
     public void storeItems(Player player){
-        CURIOS_HANDLER.storeCurios(player, curiosTag);
+        curiosHandler.storeCurios(player, curiosTag);
         for (int i = 0; i < Math.min(player.getInventory().getContainerSize(), itemStacks.size()); i++) {
             itemStacks.set(i, player.getInventory().getItem(i).copy());
         }
@@ -41,28 +42,36 @@ public class GravestoneBlockEntity extends BlockEntity {
 
     public void returnItems(Player player) {
         BlockPos pos = getBlockPos();
-        CURIOS_HANDLER.returnCurios(player, curiosTag);
+        curiosHandler.returnCurios(player, curiosTag);
         for (int i = 0; i < itemStacks.size(); i++) {
             ItemStack itemStack = itemStacks.get(i);
             if (!itemStack.isEmpty()) {
-                if (player.getInventory().getItem(i).isEmpty()) {
-                    player.getInventory().setItem(i, itemStack.copy());
-                } else {
-                    if (!player.addItem(itemStack.copy())) {
-                        player.drop(itemStack.copy(), false);
-                    }
-                }
+                restoreItem(player, i, itemStack.copy());
             }
         }
         itemStacks.clear();
         setChanged();
         if (level != null) {
+            playEffects();
+            level.removeBlock(getBlockPos(), false);
+        }
+    }
+
+    private void restoreItem(Player player, int slot, ItemStack stack) {
+        if (player.getInventory().getItem(slot).isEmpty()) {
+            player.getInventory().setItem(slot, stack);
+        } else if (!player.addItem(stack)) {
+                player.drop(stack, false);
+        }
+    }
+
+    private void playEffects() {
+        if (level != null) {
             level.playSound(null, getBlockPos(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.0f, 1.0f);
             level.playSound(null, getBlockPos(), SoundEvents.GILDED_BLACKSTONE_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
             if (level instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.3, 0.3, 0.3, 0.05);
+                serverLevel.sendParticles(ParticleTypes.SOUL, getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, 5, 0.3, 0.3, 0.3, 0.05);
             }
-            level.removeBlock(getBlockPos(), false);
         }
     }
 
@@ -118,6 +127,9 @@ public class GravestoneBlockEntity extends BlockEntity {
         ContainerHelper.saveAllItems(tag, itemStacks, registries);
     }
 
-
-
+    @Override
+    public void clearContent() {
+        itemStacks.clear();
+        curiosTag = new CompoundTag();
+    }
 }

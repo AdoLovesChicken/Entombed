@@ -46,28 +46,22 @@ public class GravestoneBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide) {
-            if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
-                if (player.getUUID().equals(grave.getOwnerUUID())) {
-                    grave.returnItems(player);
-                    return InteractionResult.SUCCESS;
-                } else if (player instanceof ServerPlayer serverPlayer) {
-                    if (serverPlayer.hasPermissions(2)) {
-                        grave.returnItems(player);
-                        player.displayClientMessage(Component.literal("You have stolen the items from another player's tomb")
-                                        .withColor(0xFF746C)
-                                , true);
-                        return InteractionResult.SUCCESS;
-                    }
-                } else {
-                    if (level instanceof ServerLevel serverLevel) {
-                        serverLevel.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.3, 0.3, 0.3, 0.05);
-                    }
-                    level.playSound(null, player.blockPosition(), SoundEvents.ANCIENT_DEBRIS_STEP, SoundSource.BLOCKS, 1.0f, 1.0f);
-                    player.displayClientMessage(Component.literal("This is not your tomb")
-                                    .withColor(0xFF746C)
-                            , true);
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
+            if (player.getUUID().equals(grave.getOwnerUUID())) {
+                grave.returnItems(player);
+                return InteractionResult.SUCCESS;
+            } else if (player instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
+                grave.returnItems(player);
+                player.displayClientMessage(Component.translatable("entombed.stolen_tomb")
+                                .withColor(0xFF746C), true);
+                return InteractionResult.SUCCESS;
+            } else {
+                if (level instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.3, 0.3, 0.3, 0.05);
                 }
+                level.playSound(null, player.blockPosition(), SoundEvents.ANCIENT_DEBRIS_STEP, SoundSource.BLOCKS, 1.0f, 1.0f);
+                player.displayClientMessage(Component.translatable("entombed.owner_mismatch")
+                                .withColor(0xFF746C), true);
             }
         }
         return InteractionResult.PASS;
@@ -75,14 +69,7 @@ public class GravestoneBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        Direction direction = state.getValue(FACING);
-        if (direction == Direction.NORTH || direction ==  Direction.SOUTH) {
-            return NORTH_SOUTH_SHAPE;
-        } else if (direction == Direction.EAST || direction ==  Direction.WEST) {
-            return EAST_WEST_SHAPE;
-        } else {
-            return NORTH_SOUTH_SHAPE;
-        }
+        return state.getValue(FACING).getAxis() == Direction.Axis.Z ? NORTH_SOUTH_SHAPE : EAST_WEST_SHAPE;
     }
 
     @Override
