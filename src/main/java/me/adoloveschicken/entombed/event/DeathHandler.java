@@ -1,5 +1,7 @@
 package me.adoloveschicken.entombed.event;
 
+import dev.ryanhcode.sable.companion.math.BoundingBox3i;
+import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.block.GravestoneBlock;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.block.ModBlocks;
@@ -10,6 +12,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameRules;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,6 +20,8 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+
+import java.util.Set;
 
 public class DeathHandler {
 
@@ -28,13 +33,35 @@ public class DeathHandler {
             }
 
             ServerLevel level = player.serverLevel();
-            BlockPos pos = getGravePosition(player);
+            BlockPos pos = findSafePlacement(level, getGravePosition(player));
             Direction facing = player.getDirection().getOpposite();
+
             level.setBlock(pos, ModBlocks.TOMB.get().defaultBlockState().setValue(GravestoneBlock.FACING, facing), 3);
             if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestoneBlockEntity) {
                 gravestoneBlockEntity.storeItems(player);
                 level.playSound(null, pos, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.5f, 0.8f);
                 level.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.3, 0.3, 0.3, 0.05);
+            }
+
+            // Tombs join the end sea in Sable!
+            if (level.dimension() == ServerLevel.END && ModList.get().isLoaded("sable")) {
+                while (pos.getY() > 1 &&
+                        (level.getBlockState(pos.below()).canBeReplaced() ||
+                                !level.getBlockState(pos.below()).getFluidState().isEmpty())) {
+                    pos = pos.below();
+                }
+                if (pos.getY() <= 1 ) {
+                    Set<BlockPos> blocks = Set.of(pos);
+                    BoundingBox3i bounds = new BoundingBox3i(
+                            pos.getX(),
+                            pos.getY(),
+                            pos.getZ(),
+                            pos.getX(),
+                            pos.getY(),
+                            pos.getZ()
+                    );
+                    SubLevelAssemblyHelper.assembleBlocks(level, pos, blocks, bounds);
+                }
             }
         }
     }
@@ -60,4 +87,65 @@ public class DeathHandler {
         NeoForge.EVENT_BUS.register(DeathHandler.class);
     }
 
+    private static BlockPos findSafePlacement(ServerLevel level, BlockPos origin) {
+        int minY = level.getMinBuildHeight() + 1;
+        int maxY = level.getMaxBuildHeight() - 1;
+
+        // Clamp to world bounds
+        BlockPos pos = new BlockPos(
+                origin.getX(),
+                Math.max(minY, Math.min(maxY, origin.getY())),
+                origin.getZ()
+        );
+
+        // Scan up if pos is solid
+        while (!level.getBlockState(pos).canBeReplaced() && pos.getY() < maxY) {
+            pos = pos.above();
+        }
+
+        // Scan down if floating (pos.below is replaceable or fluid)
+        while (pos.getY() > minY &&
+                (level.getBlockState(pos.below()).canBeReplaced() ||
+                        !level.getBlockState(pos.below()).getFluidState().isEmpty())) {
+            pos = pos.below();
+        }
+
+        // Scan up if pos is in lava or fire
+        while (pos.getY() < maxY && (!level.getBlockState(pos).getFluidState().isEmpty())) {
+            pos = pos.above();
+        }
+
+        // Reachability check: at least one neighbour must be replaceable
+        if (!isReachable(level, pos)) {
+            for (Direction dir : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
+                BlockPos candidate = pos;
+                for (int i = 0; i < 10; i++) {
+                    candidate = candidate.relative(dir);
+                    if (level.getBlockState(candidate).canBeReplaced() && isReachable(level, candidate)) {
+                        if (!level.getBlockState(candidate.below()).canBeReplaced()) {
+                            return candidate;
+                        }
+                    }
+                }
+            }
+            // fallback if nothing found
+            Entombed.LOGGER.warn("Could not find reachable placement for tomb at {}, using clamped origin", origin);
+            return pos;
+        }
+
+        return pos;
+    }
+
+    private static boolean isReachable(ServerLevel level, BlockPos pos) {
+        for (Direction dir : Direction.values()) {
+            if (level.getBlockState(pos.relative(dir)).canBeReplaced()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isWithinHeightLimit(ServerLevel level, BlockPos pos) {
+        return pos.getY() >= level.getMinBuildHeight() && pos.getY() <= level.getMaxBuildHeight();
+    }
 }
