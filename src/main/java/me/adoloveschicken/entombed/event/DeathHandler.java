@@ -1,10 +1,10 @@
 package me.adoloveschicken.entombed.event;
 
-import dev.ryanhcode.sable.companion.math.BoundingBox3i;
 import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.block.GravestoneBlock;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.block.ModBlocks;
+import me.adoloveschicken.entombed.integration.sable.SableAssemblyHelper;
 import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,16 +12,14 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-
-import java.util.Set;
 
 public class DeathHandler {
 
@@ -33,8 +31,10 @@ public class DeathHandler {
             }
 
             ServerLevel level = player.serverLevel();
-            BlockPos pos = findSafePlacement(level, getGravePosition(player));
-            Direction facing = player.getDirection().getOpposite();
+            BlockPos pos = findSafePlacement(level, getGravePosition(player), player);
+            Direction facing = ModList.get().isLoaded("sable") && SableGravePositionHandler.isOnSubLevel(player)
+                    ? SableGravePositionHandler.getLocalFacing(player)
+                    : player.getDirection().getOpposite();
 
             level.setBlock(pos, ModBlocks.TOMB.get().defaultBlockState().setValue(GravestoneBlock.FACING, facing), 3);
             if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestoneBlockEntity) {
@@ -44,23 +44,14 @@ public class DeathHandler {
             }
 
             // Tombs join the end sea in Sable!
-            if (level.dimension() == ServerLevel.END && ModList.get().isLoaded("sable")) {
+            if (level.dimension() == ServerLevel.END && ModList.get().isLoaded("aeronautics")) {
                 while (pos.getY() > 1 &&
                         (level.getBlockState(pos.below()).canBeReplaced() ||
                                 !level.getBlockState(pos.below()).getFluidState().isEmpty())) {
                     pos = pos.below();
                 }
                 if (pos.getY() <= 1 ) {
-                    Set<BlockPos> blocks = Set.of(pos);
-                    BoundingBox3i bounds = new BoundingBox3i(
-                            pos.getX(),
-                            pos.getY(),
-                            pos.getZ(),
-                            pos.getX(),
-                            pos.getY(),
-                            pos.getZ()
-                    );
-                    SubLevelAssemblyHelper.assembleBlocks(level, pos, blocks, bounds);
+                    SableAssemblyHelper.assembleBlocks(level, pos);
                 }
             }
         }
@@ -87,12 +78,24 @@ public class DeathHandler {
         NeoForge.EVENT_BUS.register(DeathHandler.class);
     }
 
-    private static BlockPos findSafePlacement(ServerLevel level, BlockPos origin) {
+    private static BlockPos findSafePlacement(ServerLevel level, BlockPos origin, ServerPlayer player) {
+        BlockPos pos = origin;
+        if (!ModList.get().isLoaded("sable")) {
+            pos = processSafePlaceMent(level, origin);
+        } else if (!SableGravePositionHandler.isOnSubLevel(player)) {
+            pos = processSafePlaceMent(level, origin);
+        }
+        return pos;
+    }
+
+    private static BlockPos processSafePlaceMent(ServerLevel level, BlockPos origin){
         int minY = level.getMinBuildHeight() + 1;
         int maxY = level.getMaxBuildHeight() - 1;
 
+        BlockPos pos = origin;
+
         // Clamp to world bounds
-        BlockPos pos = new BlockPos(
+        pos = new BlockPos(
                 origin.getX(),
                 Math.max(minY, Math.min(maxY, origin.getY())),
                 origin.getZ()
@@ -132,7 +135,6 @@ public class DeathHandler {
             Entombed.LOGGER.warn("Could not find reachable placement for tomb at {}, using clamped origin", origin);
             return pos;
         }
-
         return pos;
     }
 
