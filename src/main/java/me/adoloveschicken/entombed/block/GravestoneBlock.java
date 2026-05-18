@@ -47,15 +47,15 @@ public class GravestoneBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
-            if (player.getUUID().equals(grave.getOwnerUUID())) {
+            if (player.getUUID().equals(grave.getOwnerUUID())) { // if player matches owner of the tomb
                 grave.returnItems(player);
                 return InteractionResult.SUCCESS;
-            } else if (player instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
+            } else if (player instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) { // overrides if player is operator
                 grave.returnItems(player);
                 player.displayClientMessage(Component.translatable("entombed.stolen_tomb")
                                 .withColor(0xFF746C), true);
                 return InteractionResult.SUCCESS;
-            } else {
+            } else { // rejects item retrieval
                 if (level instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.3, 0.3, 0.3, 0.05);
                 }
@@ -67,6 +67,7 @@ public class GravestoneBlock extends BaseEntityBlock {
         return InteractionResult.PASS;
     }
 
+    // Returns items if grave is destroyed directly by player
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
@@ -75,11 +76,13 @@ public class GravestoneBlock extends BaseEntityBlock {
         return super.playerWillDestroy(level, pos, state, player);
     }
 
+    // Corrects block directions
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return state.getValue(FACING).getAxis() == Direction.Axis.Z ? NORTH_SOUTH_SHAPE : EAST_WEST_SHAPE;
     }
 
+    // Corrects block hitbox
     @Override
     protected boolean isCollisionShapeFullBlock(BlockState state, BlockGetter level, BlockPos pos) {
         return false;
@@ -95,6 +98,7 @@ public class GravestoneBlock extends BaseEntityBlock {
         return new GravestoneBlockEntity(pos, state);
     }
 
+    // Provides custom block hitbox
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;

@@ -7,12 +7,11 @@ import net.minecraft.server.level.ServerLevel;
 
 import java.util.Set;
 
+// Relieves over classes from having Sable imports
 public class SableAssemblyHelper {
 
     public static void assembleBlocks(ServerLevel level, BlockPos pos) {
-
         Set<BlockPos> blocks = Set.of(pos);
-
         BoundingBox3i bounds = new BoundingBox3i(
                 pos.getX(),
                 pos.getY(),

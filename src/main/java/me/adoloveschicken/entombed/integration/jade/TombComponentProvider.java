@@ -2,7 +2,6 @@ package me.adoloveschicken.entombed.integration.jade;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
-import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
