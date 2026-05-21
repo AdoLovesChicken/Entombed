@@ -1,0 +1,65 @@
+architectury {
+    neoForge()
+}
+
+configurations {
+    includeEmbedded
+    include.extendsFrom(includeEmbedded)
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir project(':common').sourceSets.main.java
+        }
+        resources {
+            srcDir project(':common').sourceSets.main.resources
+        }
+    }
+}
+
+loom {
+    runs {
+        client {
+            client()
+            programArgs "--username", "Dev"
+        }
+        server {
+            server()
+            programArgs "--nogui"
+        }
+    }
+}
+
+dependencies {
+    neoForge "net.neoforged:neoforge:${project.neo_version}"
+
+    modImplementation "maven.modrinth:jade:${project.jade_version}"
+    modCompileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+    modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    modApi("dev.ryanhcode.sable:sable-common-${project.minecraft_version}:${project.sable_version}")
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version_range: minecraft_version_range,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+tasks.ideaSyncTask.dependsOn generateModMetadata
+tasks.named('processResources') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

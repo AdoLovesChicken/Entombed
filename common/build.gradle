@@ -1,0 +1,18 @@
+architectury {
+    common('neoforge', 'fabric')
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+dependencies {
+    modImplementation "maven.modrinth:jade:${project.jade_version}"
+    modCompileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+    modCompileOnly "maven.modrinth:trinkets:${project.trinkets_version}"
+    modApi("dev.ryanhcode.sable:sable-common-${project.minecraft_version}:${project.sable_version}")
+}

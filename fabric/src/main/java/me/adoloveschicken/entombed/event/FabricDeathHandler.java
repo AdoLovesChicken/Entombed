@@ -1,0 +1,33 @@
+package me.adoloveschicken.entombed.event;
+
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.level.ServerPlayer;
+
+public class FabricDeathHandler {
+
+    private static final boolean SABLE_LOADED = FabricLoader.getInstance().isModLoaded("sable");
+    private static final boolean AERONAUTICS_LOADED = false;
+    private static final boolean TRINKETS_LOADED = FabricLoader.getInstance().isModLoaded("trinkets");
+
+    public static void register() {
+        ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
+            if (entity instanceof ServerPlayer player) {
+                if (DeathHandler.onPlayerDrops(player)) {
+                    DeathHandler.onPlayerDeath(player, SABLE_LOADED, AERONAUTICS_LOADED);
+                    // Clear main inventory so nothing drops
+                    player.getInventory().clearContent();
+                    // Clear trinket slots so they don't drop
+                    if (TRINKETS_LOADED) {
+                        dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(player).ifPresent(component ->
+                                component.getInventory().values().forEach(group ->
+                                        group.values().forEach(inv -> inv.clearContent())
+                                )
+                        );
+                    }
+                }
+            }
+            return true;
+        });
+    }
+}

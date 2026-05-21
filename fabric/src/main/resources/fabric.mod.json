@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "entombed",
+  "version": "2.0.0",
+  "name": "Entombed",
+  "description": "A Gravestone (tomb) mod",
+  "authors": ["AdoLovesChicken"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.adoloveschicken.entombed.EntombedFabric"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "fabric-api": "*",
+    "minecraft": "~1.21.1"
+  },
+  "suggests": {
+    "jade": "*",
+    "trinkets": "*"
+  }
+}

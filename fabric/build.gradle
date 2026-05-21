@@ -1,0 +1,44 @@
+architectury {
+    fabric()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir project(':common').sourceSets.main.java
+        }
+        resources {
+            srcDir project(':common').sourceSets.main.resources
+        }
+    }
+}
+
+loom {
+    runs {
+        client {
+            client()
+            programArgs "--username", "Dev"
+        }
+        server {
+            server()
+            programArgs "--nogui"
+        }
+    }
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    modImplementation "maven.modrinth:jade:${project.jade_fabric_version}"
+    modImplementation "dev.emi:trinkets:${project.trinkets_version}"
+    modCompileOnly("dev.ryanhcode.sable:sable-common-${project.minecraft_version}:${project.sable_version}")
+
+}
+
+tasks.named('processResources') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+tasks.named('sourcesJar') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
