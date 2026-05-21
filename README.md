@@ -15,14 +15,3 @@
 ### Installation
 You can either:
 - Download prebuilt .jar files of the mod on [Modrinth](https://modrinth.com/mod/entombed) or in the [releases page](https://github.com/AdoLovesChicken/Entombed/releases)
-- Build yourself:
-```
-# Clone the repo
-git clone https://github.com/AdoLovesChicken/Entombed.git
-
-# Navigate to directory
-cd Entombed
-
-# Build
-./gradlew build
-```
