@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.adoloveschicken.entombed.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ExplosionMixin",
+    "ExplosionAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

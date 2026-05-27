@@ -2,6 +2,7 @@ package me.adoloveschicken.entombed.integration.sable;
 
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.SubLevelAccess;
+import me.adoloveschicken.entombed.Entombed;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -17,8 +18,16 @@ public class SableGravePositionHandler {
     public static BlockPos getPosition(ServerPlayer player) {
         SubLevelAccess subLevel = SableCompanion.INSTANCE.getTrackingOrVehicleSubLevel(player);
         if (subLevel == null) return player.blockPosition();
+
         Vec3 localPos = subLevel.logicalPose().transformPositionInverse(player.position());
-        return BlockPos.containing(localPos);
+        BlockPos result = BlockPos.containing(localPos);
+
+        if (!player.serverLevel().isInWorldBounds(result)) {
+            Entombed.LOGGER.warn("Sublevel transform produced out-of-range pos {}, falling back to world pos", result);
+            return player.blockPosition();
+        }
+
+        return result;
     }
 
     // Checks if a player is on/in a sub-level

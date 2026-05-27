@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -74,6 +75,17 @@ public class GravestoneBlock extends BaseEntityBlock {
             grave.returnItems(player);
         }
         return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    // Stops entities from destroying tomb
+    public boolean canEntityDestroy(BlockState state, BlockGetter level, BlockPos pos, Entity entity) {
+        return false;
+    }
+
+    // Stops explosions from destroying tomb
+    @Override
+    public float getExplosionResistance() {
+        return Float.MAX_VALUE;
     }
 
     // Corrects block directions

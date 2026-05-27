@@ -30,6 +30,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
+
+    modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
     modImplementation "maven.modrinth:jade:${project.jade_fabric_version}"
     modImplementation "dev.emi:trinkets:${project.trinkets_version}"
     modCompileOnly("dev.ryanhcode.sable:sable-common-${project.minecraft_version}:${project.sable_version}")

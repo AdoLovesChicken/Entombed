@@ -12,6 +12,9 @@
       "me.adoloveschicken.entombed.EntombedFabric"
     ]
   },
+  "mixins": [
+    "entombed.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.16.10",
     "fabric-api": "*",

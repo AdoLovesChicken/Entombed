@@ -1,10 +1,10 @@
 package me.adoloveschicken.entombed;
 
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
-import me.adoloveschicken.entombed.block.CommonModBlockEntities;
 import me.adoloveschicken.entombed.block.ModBlockEntities;
 import me.adoloveschicken.entombed.block.ModBlocks;
 import me.adoloveschicken.entombed.event.NeoDeathHandler;
+import me.adoloveschicken.entombed.integration.accessory.AccessoriesHandler;
 import me.adoloveschicken.entombed.integration.curios.CuriosHandler;
 import me.adoloveschicken.entombed.integration.henkelmax.HenkelMaxMigrator;
 import me.adoloveschicken.entombed.item.ModItems;
@@ -25,6 +25,8 @@ public class EntombedNeo {
         modEventBus.addListener((FMLCommonSetupEvent event) -> {
             if (ModList.get().isLoaded("curios")) {
                 GravestoneBlockEntity.setGlobalAccessoryHandler(new CuriosHandler());
+            } else if (ModList.get().isLoaded("accessories")) {
+                GravestoneBlockEntity.setGlobalAccessoryHandler(new AccessoriesHandler());
             }
         });
     }

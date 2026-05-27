@@ -4,11 +4,11 @@ import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.block.ModBlockEntities;
 import me.adoloveschicken.entombed.block.ModBlocks;
 import me.adoloveschicken.entombed.event.FabricDeathHandler;
+import me.adoloveschicken.entombed.integration.accessory.AccessoriesHandler;
 import me.adoloveschicken.entombed.integration.trinkets.TrinketsHandler;
 import me.adoloveschicken.entombed.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.level.ServerPlayer;
 
 public class EntombedFabric implements ModInitializer {
     @Override
@@ -19,6 +19,8 @@ public class EntombedFabric implements ModInitializer {
         FabricDeathHandler.register();
         if (FabricLoader.getInstance().isModLoaded("trinkets")) {
             GravestoneBlockEntity.setGlobalAccessoryHandler(new TrinketsHandler());
+        } else if (FabricLoader.getInstance().isModLoaded("accessories")) {
+            GravestoneBlockEntity.setGlobalAccessoryHandler(new AccessoriesHandler());
         }
     }
 }
