@@ -23,6 +23,15 @@ subprojects {
     java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
     repositories {
+        maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
+        maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
+        maven { url = "https://maven.shedaniel.me/" }
+        maven {
+            url "https://maven.squiddev.cc"
+            content {
+                includeGroup("cc.tweaked")
+            }
+        }
         maven {
             name = "Ladysnake Libs"
             url = "https://maven.ladysnake.org/releases"
@@ -54,7 +63,10 @@ subprojects {
             name = "NeoForged"
             url = "https://maven.neoforged.net/releases"
         }
-    }
+        maven { url 'https://maven.wispforest.io/releases' }
+        maven { url 'https://maven.su5ed.dev/releases' }
+        maven { url 'https://maven.fabricmc.net' }
+        }
 
     dependencies {
         minecraft "com.mojang:minecraft:${project.minecraft_version}"

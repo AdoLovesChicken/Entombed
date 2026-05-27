@@ -34,6 +34,18 @@ loom {
 dependencies {
     neoForge "net.neoforged:neoforge:${project.neo_version}"
 
+    implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    implementation("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
+    compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
+    runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
+    implementation("com.tterrag.registrate:Registrate:${registrate_version}")
+    implementation "dev.simulated_team.simulated:simulated-neoforge-${project.minecraft_version}:${project.simulated_version}"
+    implementation "maven.modrinth:create-aeronautics:${project.simulated_version}+mc${project.minecraft_version}"
+    modImplementation("io.wispforest:accessories-neoforge:${project.accessories_version}")
+    forgeRuntimeLibrary("io.wispforest:endec:0.1.9")
+    forgeRuntimeLibrary("io.wispforest.endec:gson:0.1.5")
+    forgeRuntimeLibrary("io.wispforest.endec:jankson:0.1.6")
+    forgeRuntimeLibrary("io.wispforest.endec:netty:0.1.6")
     modImplementation "maven.modrinth:jade:${project.jade_version}"
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
@@ -61,5 +73,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 sourceSets.main.resources.srcDir generateModMetadata
 tasks.ideaSyncTask.dependsOn generateModMetadata
 tasks.named('processResources') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+tasks.named('sourcesJar') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

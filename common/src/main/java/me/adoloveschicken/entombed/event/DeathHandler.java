@@ -6,6 +6,7 @@ import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.block.CommonModBlocks;
 import me.adoloveschicken.entombed.integration.sable.SableAssemblyHelper;
 import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
+import me.adoloveschicken.entombed.integration.simulated.EndSeaHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -33,7 +34,7 @@ public class DeathHandler {
             level.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.3, 0.3, 0.3, 0.05);
         }
 
-        if (level.dimension() == ServerLevel.END && aeronauticsLoaded) {
+        if (aeronauticsLoaded && EndSeaHandler.hasEndSea(level)) {
             while (pos.getY() > 1 &&
                     (level.getBlockState(pos.below()).canBeReplaced() ||
                             !level.getBlockState(pos.below()).getFluidState().isEmpty())) {
