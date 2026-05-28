@@ -47,7 +47,7 @@ public class DeathHandler {
     }
 
     public static boolean onPlayerDrops(ServerPlayer player) {
-        return !player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);// tells the loader to cancel drops
+        return !player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
     }
 
     private static BlockPos getGravePosition(ServerPlayer player, boolean sableLoaded) {

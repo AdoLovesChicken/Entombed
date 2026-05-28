@@ -2,10 +2,10 @@ package me.adoloveschicken.entombed.block;
 
 import me.adoloveschicken.entombed.integration.IAccessoryHandler;
 import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
+import me.adoloveschicken.entombed.integration.soulbound.SoulboundHelper;
+import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -14,6 +14,10 @@ import net.minecraft.world.Clearable;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -44,8 +48,16 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     }
 
     public void storeItems(Player player) {
+        RegistryAccess registryAccess = player.level().registryAccess();
         for (int i = 0; i < Math.min(player.getInventory().getContainerSize(), itemStacks.size()); i++) {
-            itemStacks.set(i, player.getInventory().getItem(i).copy());
+
+            ItemStack stack = player.getInventory().getItem(i);
+
+            if (!SoulboundHelper.hasSoulboundEnchantment(stack, registryAccess)) {
+                itemStacks.set(i, stack.copy());
+            } else {
+                player.drop(stack, true);
+            }
         }
         if (globalAccessoryHandler != null) globalAccessoryHandler.storeCurios(player, extraInventoriesTag);
         if (inventorioLoaded) InventorioHandler.storeInventorio(player, extraInventoriesTag);
@@ -71,10 +83,34 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
 
     private void restoreItem(Player player, int slot, ItemStack stack) {
         if (player.getInventory().getItem(slot).isEmpty()) {
+            if (hasVanishingCurse(stack, player.level().registryAccess())) {
+                return;
+            }
+
+            if (hasBindingCurse(stack, player.level().registryAccess())) {
+                player.drop(stack, false);
+                return;
+            }
+
             player.getInventory().setItem(slot, stack);
+
         } else if (!player.addItem(stack)) {
                 player.drop(stack, false);
         }
+    }
+
+    public static boolean hasVanishingCurse(ItemStack stack, RegistryAccess registryAccess) {
+        return EnchantmentHelper.getItemEnchantmentLevel(
+                registryAccess.lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.VANISHING_CURSE), stack
+        ) > 0;
+    }
+
+    public static boolean hasBindingCurse(ItemStack stack, RegistryAccess registryAccess) {
+        return EnchantmentHelper.getItemEnchantmentLevel(
+                registryAccess.lookupOrThrow(Registries.ENCHANTMENT)
+                        .getOrThrow(Enchantments.BINDING_CURSE), stack
+        ) > 0;
     }
 
     private void playEffects() {

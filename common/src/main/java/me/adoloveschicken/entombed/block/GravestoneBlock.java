@@ -9,9 +9,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -46,26 +49,36 @@ public class GravestoneBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        useWithoutItem(state, level, pos, player, hitResult);
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
-            if (player.getUUID().equals(grave.getOwnerUUID())) { // if player matches owner of the tomb
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+        if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
+            if (player.getUUID().equals(grave.getOwnerUUID())) {
                 grave.returnItems(player);
-                return InteractionResult.SUCCESS;
-            } else if (player instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) { // overrides if player is operator
+                return InteractionResult.CONSUME;
+            } else if (player instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
                 grave.returnItems(player);
                 player.displayClientMessage(Component.translatable("entombed.stolen_tomb")
-                                .withColor(0xFF746C), true);
-                return InteractionResult.SUCCESS;
-            } else { // rejects item retrieval
+                        .withColor(0xFF746C), true);
+                return InteractionResult.CONSUME;
+            } else {
                 if (level instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.3, 0.3, 0.3, 0.05);
                 }
                 level.playSound(null, player.blockPosition(), SoundEvents.ANCIENT_DEBRIS_STEP, SoundSource.BLOCKS, 1.0f, 1.0f);
                 player.displayClientMessage(Component.translatable("entombed.owner_mismatch")
-                                .withColor(0xFF746C), true);
+                        .withColor(0xFF746C), true);
+                return InteractionResult.CONSUME;
             }
         }
-        return InteractionResult.PASS;
+        return InteractionResult.CONSUME;
     }
 
     // Returns items if grave is destroyed directly by player
