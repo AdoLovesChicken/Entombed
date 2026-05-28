@@ -1,6 +1,7 @@
 package me.adoloveschicken.entombed.block;
 
-import me.adoloveschicken.entombed.integration.accessory.IAccessoryHandler;
+import me.adoloveschicken.entombed.integration.IAccessoryHandler;
+import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -24,12 +25,17 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     private final NonNullList<ItemStack> itemStacks = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
     private UUID ownerUUID;
     private String ownerName;
-    private CompoundTag curiosTag = new CompoundTag();
+    private CompoundTag extraInventoriesTag = new CompoundTag();
 
     private static IAccessoryHandler globalAccessoryHandler = null;
+    private static boolean inventorioLoaded = false;
 
     public static void setGlobalAccessoryHandler(IAccessoryHandler handler) {
         globalAccessoryHandler = handler;
+    }
+
+    public static void setInventorioLoaded(boolean isInventorioLoaded) {
+        inventorioLoaded = isInventorioLoaded;
     }
 
 
@@ -38,21 +44,23 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     }
 
     public void storeItems(Player player) {
-        if (globalAccessoryHandler != null) globalAccessoryHandler.storeCurios(player, curiosTag);
         for (int i = 0; i < Math.min(player.getInventory().getContainerSize(), itemStacks.size()); i++) {
             itemStacks.set(i, player.getInventory().getItem(i).copy());
         }
+        if (globalAccessoryHandler != null) globalAccessoryHandler.storeCurios(player, extraInventoriesTag);
+        if (inventorioLoaded) InventorioHandler.storeInventorio(player, extraInventoriesTag);
         ownerUUID = player.getUUID();
     }
 
     public void returnItems(Player player) {
-        if (globalAccessoryHandler != null) globalAccessoryHandler.returnCurios(player, curiosTag);
         for (int i = 0; i < itemStacks.size(); i++) {
             ItemStack itemStack = itemStacks.get(i);
             if (!itemStack.isEmpty()) {
                 restoreItem(player, i, itemStack.copy());
             }
         }
+        if (globalAccessoryHandler != null) globalAccessoryHandler.returnCurios(player, extraInventoriesTag);
+        if (inventorioLoaded) InventorioHandler.returnInventorio(player, extraInventoriesTag);
         itemStacks.clear();
         setChanged();
         if (level != null) {
@@ -99,8 +107,8 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         itemStacks.set(slotIndex, itemStack);
     }
 
-    public CompoundTag getCuriosTag() {
-        return curiosTag;
+    public CompoundTag getExtraInventoriesTag() {
+        return extraInventoriesTag;
     }
 
     @Override
@@ -112,8 +120,10 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         if (tag.contains("OwnerName")) {
             ownerName = tag.getString("OwnerName");
         }
-        if (tag.contains("CurioItems")) {
-            curiosTag = tag.getCompound("CurioItems");
+        if (tag.contains("ModExtras")) {
+            extraInventoriesTag = tag.getCompound("ModExtras");
+        } else if (tag.contains("CurioItems")) {
+            extraInventoriesTag = tag.getCompound("CurioItems");
         }
         ContainerHelper.loadAllItems(tag, itemStacks, registries);
     }
@@ -127,13 +137,14 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         if (ownerName != null) {
             tag.putString("OwnerName", ownerName);
         }
-        tag.put("CurioItems", curiosTag);
+
+        tag.put("ModExtras", extraInventoriesTag);
         ContainerHelper.saveAllItems(tag, itemStacks, registries);
     }
 
     @Override
     public void clearContent() {
         itemStacks.clear();
-        curiosTag = new CompoundTag();
+        extraInventoriesTag = new CompoundTag();
     }
 }

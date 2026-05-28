@@ -22,7 +22,10 @@ public class EntombedNeo {
         ModBlockEntities.register(modEventBus);
         NeoDeathHandler.register();
         HenkelMaxMigrator.register();
+
         modEventBus.addListener((FMLCommonSetupEvent event) -> {
+            GravestoneBlockEntity.setInventorioLoaded(ModList.get().isLoaded("inventorio"));
+
             if (ModList.get().isLoaded("curios")) {
                 GravestoneBlockEntity.setGlobalAccessoryHandler(new CuriosHandler());
             } else if (ModList.get().isLoaded("accessories")) {

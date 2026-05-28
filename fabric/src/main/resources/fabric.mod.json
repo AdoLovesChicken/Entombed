@@ -22,6 +22,8 @@
   },
   "suggests": {
     "jade": "*",
-    "trinkets": "*"
+    "trinkets": "*",
+    "accessories": "*",
+    "inventorio": "*"
   }
 }

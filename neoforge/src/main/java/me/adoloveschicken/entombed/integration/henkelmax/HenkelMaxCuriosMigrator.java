@@ -27,6 +27,6 @@ public class HenkelMaxCuriosMigrator {
                 curiosTagList.add(curiosEntry);
             }
         }
-        grave.getCuriosTag().put("CurioItems", curiosTagList);
+        grave.getExtraInventoriesTag().put("CurioItems", curiosTagList);
     }
 }

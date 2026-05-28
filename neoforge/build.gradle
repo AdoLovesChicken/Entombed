@@ -2,6 +2,10 @@ architectury {
     neoForge()
 }
 
+base {
+    archivesName = "${mod_id}+neo"
+}
+
 configurations {
     includeEmbedded
     include.extendsFrom(includeEmbedded)
@@ -34,6 +38,7 @@ loom {
 dependencies {
     neoForge "net.neoforged:neoforge:${project.neo_version}"
 
+    modCompileOnly "maven.modrinth:inventorio:${project.inventorio_neo_version}"
     implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
     implementation("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")

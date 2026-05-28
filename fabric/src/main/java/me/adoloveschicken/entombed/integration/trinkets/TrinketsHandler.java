@@ -2,7 +2,7 @@ package me.adoloveschicken.entombed.integration.trinkets;
 
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
-import me.adoloveschicken.entombed.integration.accessory.IAccessoryHandler;
+import me.adoloveschicken.entombed.integration.IAccessoryHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;

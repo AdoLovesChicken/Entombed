@@ -1,4 +1,4 @@
-package me.adoloveschicken.entombed.integration.accessory;
+package me.adoloveschicken.entombed.integration;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;

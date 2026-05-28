@@ -23,6 +23,17 @@ subprojects {
     java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
     repositories {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "Modrinth"
+                    url = "https://api.modrinth.com/maven"
+                }
+            }
+            filter {
+                includeGroup "maven.modrinth"
+            }
+        }
         maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
         maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
         maven { url = "https://maven.shedaniel.me/" }

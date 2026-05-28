@@ -2,14 +2,13 @@ package me.adoloveschicken.entombed.integration.accessory;
 
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
+import me.adoloveschicken.entombed.integration.IAccessoryHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 public class AccessoriesHandler implements IAccessoryHandler {
 

@@ -18,4 +18,5 @@ dependencies {
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     modCompileOnly "maven.modrinth:trinkets:${project.trinkets_version}"
     modApi("dev.ryanhcode.sable:sable-common-${project.minecraft_version}:${project.sable_version}")
+    modCompileOnly "maven.modrinth:inventorio:${project.inventorio_fabric_version}"
 }

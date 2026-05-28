@@ -15,7 +15,6 @@ public class ModBlocks {
                 new GravestoneBlock(BlockBehaviour.Properties.of()
                         .noOcclusion()
                         .destroyTime(0.5f)
-                        .explosionResistance(600)
                         .sound(SoundType.STONE)
                 )
         );

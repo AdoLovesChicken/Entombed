@@ -2,6 +2,10 @@ architectury {
     fabric()
 }
 
+base {
+    archivesName = "${mod_id}+fabric"
+}
+
 sourceSets {
     main {
         java {
@@ -30,7 +34,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-
+    modCompileOnly("maven.modrinth:inventorio:${project.inventorio_fabric_version}")
     modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
     modImplementation "maven.modrinth:jade:${project.jade_fabric_version}"
     modImplementation "dev.emi:trinkets:${project.trinkets_version}"

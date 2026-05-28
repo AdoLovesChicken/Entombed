@@ -1,6 +1,6 @@
 package me.adoloveschicken.entombed.integration.curios;
 
-import me.adoloveschicken.entombed.integration.accessory.IAccessoryHandler;
+import me.adoloveschicken.entombed.integration.IAccessoryHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
