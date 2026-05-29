@@ -1,6 +1,7 @@
 package me.adoloveschicken.entombed.integration.jade;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import net.minecraft.core.component.DataComponents;
@@ -10,8 +11,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PlayerHeadItem;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.phys.Vec2;
+import snownee.jade.addon.vanilla.PlayerHeadProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -37,17 +40,33 @@ public enum TombComponentProvider implements IBlockComponentProvider, IServerDat
                 iTooltip.append(Component.translatable("entombed.tomb_unclaimed"));
             } else {
                 ItemStack ownerSkull = new ItemStack(Items.PLAYER_HEAD);
-                if (serverData.contains("OwnerUUID")) {
-                    ownerSkull.set(DataComponents.PROFILE, new ResolvableProfile(
-                            Optional.of(serverData.getString("Owner")),
-                            Optional.of(serverData.getUUID("OwnerUUID")),
-                            new PropertyMap()));
-                } else {
-                    ownerSkull.set(DataComponents.PROFILE, new ResolvableProfile(
-                            Optional.of(serverData.getString("Owner")),
-                            Optional.empty(),
-                            new PropertyMap()));
+
+                PropertyMap propertyMap = new PropertyMap();
+                if (serverData.contains("TextureValue")) {
+                    String textureValue = serverData.getString("TextureValue");
+                    String textureSignature = serverData.contains("TextureSignature")
+                            ? serverData.getString("TextureSignature")
+                            : null;
+
+                    Property textureProperty;
+                    if (textureSignature != null) {
+                        textureProperty = new Property(
+                                "textures", textureValue, textureSignature);
+                    } else {
+                        textureProperty = new Property(
+                                "textures", textureValue);
+                    }
+                    propertyMap.put("textures", textureProperty);
                 }
+
+                ownerSkull.set(DataComponents.PROFILE, new ResolvableProfile(
+                        Optional.of(serverData.getString("Owner")),
+                        serverData.contains("OwnerUUID")
+                                ? Optional.of(serverData.getUUID("OwnerUUID"))
+                                : Optional.empty(),
+                        propertyMap
+                ));
+
                 IElement icon = elements.item(ownerSkull, 0.5f).size(new Vec2(10, 10)).translate(new Vec2(0, -1));
                 icon.message(null);
                 iTooltip.add(icon);
@@ -70,10 +89,20 @@ public enum TombComponentProvider implements IBlockComponentProvider, IServerDat
         }
         MinecraftServer server = blockAccessor.getLevel().getServer();
         Optional<GameProfile> profile = server.getProfileCache().get(tomb.getOwnerUUID());
+
         if (profile.isPresent()) {
             String name = profile.get().getName();
             data.putString("Owner", name);
             data.putUUID("OwnerUUID", tomb.getOwnerUUID());
+
+            PropertyMap propertyMap = profile.get().getProperties();;
+            if (propertyMap.containsKey("textures")) {
+                Property texture = propertyMap.get("textures").iterator().next();
+                data.putString("TextureValue", texture.value());
+                if (texture.hasSignature()) {
+                    data.putString("TextureSignature", texture.signature());
+                }
+            }
         } else {
             String storedName = tomb.getOwnerName();
             if (storedName != null && !storedName.isEmpty()) {
