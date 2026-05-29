@@ -1,10 +1,9 @@
 package me.adoloveschicken.entombed.event;
 
 import me.adoloveschicken.entombed.Entombed;
+import me.adoloveschicken.entombed.block.CommonModBlocks;
 import me.adoloveschicken.entombed.block.GravestoneBlock;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
-import me.adoloveschicken.entombed.block.CommonModBlocks;
-import me.adoloveschicken.entombed.integration.sable.SableAssemblyHelper;
 import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
 import me.adoloveschicken.entombed.integration.simulated.EndSeaHandler;
 import net.minecraft.core.BlockPos;
@@ -17,69 +16,46 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameRules;
 
 public class DeathHandler {
+    private static int minY;
+    private static int maxY;
 
     public static void onPlayerDeath(ServerPlayer player, boolean sableLoaded, boolean aeronauticsLoaded) {
-        if (player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) return;
+        if (keepInvEnabled(player)) return;
 
         ServerLevel level = player.serverLevel();
-        BlockPos pos = findSafePlacement(level, getGravePosition(player, sableLoaded), player, sableLoaded);
-        Direction facing = sableLoaded && SableGravePositionHandler.isOnSubLevel(player)
+        minY = level.getMinBuildHeight();
+        maxY = level.getMaxBuildHeight() - 1;
+
+        BlockPos deathPos = sableLoaded
+                ? SableGravePositionHandler.getPosition(player)
+                : player.blockPosition();
+        Direction deathFacing = sableLoaded && SableGravePositionHandler.isOnSubLevel(player)
                 ? SableGravePositionHandler.getLocalFacing(player)
                 : player.getDirection().getOpposite();
 
-        level.setBlock(pos, CommonModBlocks.TOMB.defaultBlockState().setValue(GravestoneBlock.FACING, facing), 3);
+        BlockPos pos = sableLoaded
+                ? deathPos
+                : getSafePlacement(level, deathPos);
+
+        level.setBlock(pos, CommonModBlocks.TOMB.defaultBlockState().setValue(GravestoneBlock.FACING, deathFacing), 3);
         if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestoneBlockEntity) {
             gravestoneBlockEntity.storeItems(player);
             level.playSound(null, pos, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.5f, 0.8f);
             level.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.3, 0.3, 0.3, 0.05);
         }
 
-        if (aeronauticsLoaded && EndSeaHandler.hasEndSea(level)) {
-            while (pos.getY() > 1 &&
-                    (level.getBlockState(pos.below()).canBeReplaced() ||
-                            !level.getBlockState(pos.below()).getFluidState().isEmpty())) {
-                pos = pos.below();
-            }
-            if (pos.getY() <= 1) {
-                SableAssemblyHelper.assembleBlocks(level, pos);
-            }
-        }
+        if (aeronauticsLoaded) EndSeaHandler.assembleEndSea(level, pos);
     }
 
-    public static boolean onPlayerDrops(ServerPlayer player) {
-        return !player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
-    }
-
-    private static BlockPos getGravePosition(ServerPlayer player, boolean sableLoaded) {
-        if (sableLoaded) return SableGravePositionHandler.getPosition(player);
-        return player.blockPosition();
-    }
-
-    private static BlockPos findSafePlacement(ServerLevel level, BlockPos origin, ServerPlayer player, boolean sableLoaded) {
-        if (!sableLoaded) return processSafePlacement(level, origin);
-        if (!SableGravePositionHandler.isOnSubLevel(player)) return processSafePlacement(level, origin);
-        return origin;
-    }
-
-    private static BlockPos processSafePlacement(ServerLevel level, BlockPos origin) {
-        int minY = level.getMinBuildHeight() + 1;
-        int maxY = level.getMaxBuildHeight() - 1;
-
+    private static BlockPos getSafePlacement(ServerLevel level, BlockPos origin) {
         BlockPos pos = new BlockPos(
                 origin.getX(),
-                Math.max(minY, Math.min(maxY, origin.getY())),
+                Math.max(minY, Math.min(maxY, origin.getY())), // Clamp to world confines
                 origin.getZ()
         );
 
-        while (!level.getBlockState(pos).canBeReplaced() && pos.getY() < maxY) pos = pos.above();
-
-        while (pos.getY() > minY &&
-                (level.getBlockState(pos.below()).canBeReplaced() ||
-                        !level.getBlockState(pos.below()).getFluidState().isEmpty())) {
-            pos = pos.below();
-        }
-
-        while (pos.getY() < maxY && !level.getBlockState(pos).getFluidState().isEmpty()) pos = pos.above();
+        pos = getNearestAir(pos, level, Direction.UP);
+        pos = getNearestAir(pos, level, Direction.DOWN);
 
         if (!isReachable(level, pos)) {
             for (Direction dir : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
@@ -97,10 +73,29 @@ public class DeathHandler {
         return pos;
     }
 
+    private static BlockPos getNearestAir(BlockPos pos, ServerLevel level, Direction direction) {
+        while (!level.getBlockState(pos).isAir()
+                && pos.getY() < maxY
+                && pos.getY() > minY) {
+            pos = pos.relative(direction);
+        }
+        return pos;
+    }
+
     private static boolean isReachable(ServerLevel level, BlockPos pos) {
         for (Direction dir : Direction.values()) {
             if (level.getBlockState(pos.relative(dir)).canBeReplaced()) return true;
         }
         return false;
     }
+
+    public static boolean onPlayerDrops(ServerPlayer player) {
+        return !keepInvEnabled(player);
+    }
+
+    private static boolean keepInvEnabled(ServerPlayer player) {
+        return player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+    }
+
+
 }
