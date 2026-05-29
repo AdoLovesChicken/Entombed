@@ -15,9 +15,13 @@ public class SoulboundHelper {
             ));
 
     public static boolean hasSoulboundEnchantment(ItemStack stack, RegistryAccess registryAccess) {
-        return EnchantmentHelper.getItemEnchantmentLevel(
-                registryAccess.lookupOrThrow(Registries.ENCHANTMENT)
-                        .getOrThrow(SOULBOUND), stack
-        ) > 0;
+        try {
+            return EnchantmentHelper.getItemEnchantmentLevel(
+                    registryAccess.lookupOrThrow(Registries.ENCHANTMENT)
+                            .getOrThrow(SOULBOUND), stack
+            ) > 0;
+        } catch (IllegalStateException e) {
+            return false;
+        }
     }
 }
