@@ -1,12 +1,15 @@
 package me.adoloveschicken.entombed.integration.henkelmax;
 
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
+import me.adoloveschicken.entombed.storage.GraveStorageManager;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.UUID;
 
 public class HenkelMaxCuriosMigrator {
     public static void migrate(ListTag items, GravestoneBlockEntity grave, ServerLevel level) {
@@ -27,6 +30,12 @@ public class HenkelMaxCuriosMigrator {
                 curiosTagList.add(curiosEntry);
             }
         }
-        grave.getExtraInventoriesTag().put("CurioItems", curiosTagList);
+
+        UUID graveID = grave.getGraveID();
+        CompoundTag existingData = GraveStorageManager.loadGrave(graveID);
+        if (existingData != null) {
+            existingData.put("CurioItems", curiosTagList);
+            GraveStorageManager.saveGrave(graveID, existingData);
+        }
     }
 }

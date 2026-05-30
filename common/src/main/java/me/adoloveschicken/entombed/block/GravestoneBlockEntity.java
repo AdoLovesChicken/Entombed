@@ -3,6 +3,8 @@ package me.adoloveschicken.entombed.block;
 import me.adoloveschicken.entombed.integration.IAccessoryHandler;
 import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.integration.soulbound.SoulboundHelper;
+import me.adoloveschicken.entombed.storage.GraveIndex;
+import me.adoloveschicken.entombed.storage.GraveStorageManager;
 import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -26,10 +28,9 @@ import java.util.UUID;
 public class GravestoneBlockEntity extends BlockEntity implements Clearable {
 
     public static final int INVENTORY_SIZE = 41;
-    private final NonNullList<ItemStack> itemStacks = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
     private UUID ownerUUID;
+    private UUID graveID;
     private String ownerName;
-    private CompoundTag extraInventoriesTag = new CompoundTag();
 
     private static IAccessoryHandler globalAccessoryHandler = null;
     private static boolean inventorioLoaded = false;
@@ -48,6 +49,9 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     }
 
     public void storeItems(Player player) {
+        final NonNullList<ItemStack> itemStacks = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
+        CompoundTag extraInventoriesTag = new CompoundTag();
+
         RegistryAccess registryAccess = player.level().registryAccess();
         for (int i = 0; i < Math.min(player.getInventory().getContainerSize(), itemStacks.size()); i++) {
 
@@ -62,9 +66,22 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         if (globalAccessoryHandler != null) globalAccessoryHandler.storeCurios(player, extraInventoriesTag);
         if (inventorioLoaded) InventorioHandler.storeInventorio(player, extraInventoriesTag);
         ownerUUID = player.getUUID();
+        graveID = UUID.randomUUID();
+
+        CompoundTag graveData = new CompoundTag();
+        ContainerHelper.saveAllItems(graveData, itemStacks, registryAccess);
+        graveData.put("ModExtras", extraInventoriesTag);
+        GraveStorageManager.saveGrave(graveID, graveData);
     }
 
     public void returnItems(Player player) {
+        final NonNullList<ItemStack> itemStacks = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
+        RegistryAccess registryAccess = player.level().registryAccess();
+
+        CompoundTag graveData = GraveStorageManager.loadGrave(graveID);
+        ContainerHelper.loadAllItems(graveData, itemStacks, registryAccess);
+        CompoundTag extraInventoriesTag = graveData.getCompound("ModExtras");
+
         for (int i = 0; i < itemStacks.size(); i++) {
             ItemStack itemStack = itemStacks.get(i);
             if (!itemStack.isEmpty()) {
@@ -73,6 +90,9 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         }
         if (globalAccessoryHandler != null) globalAccessoryHandler.returnCurios(player, extraInventoriesTag);
         if (inventorioLoaded) InventorioHandler.returnInventorio(player, extraInventoriesTag);
+
+        GraveStorageManager.deleteGrave(graveID);
+        GraveIndex.removeGrave(player.getUUID(), graveID);
         itemStacks.clear();
         setChanged();
         if (level != null) {
@@ -81,7 +101,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         }
     }
 
-    private void restoreItem(Player player, int slot, ItemStack stack) {
+    public static void restoreItem(Player player, int slot, ItemStack stack) {
         if (player.getInventory().getItem(slot).isEmpty()) {
             if (hasVanishingCurse(stack, player.level().registryAccess())) {
                 return;
@@ -139,29 +159,52 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         ownerName = newOwnerName;
     }
 
-    public void setItemInSlot(int slotIndex, ItemStack itemStack) {
-        itemStacks.set(slotIndex, itemStack);
+    public UUID getGraveID() {
+        return graveID;
     }
 
-    public CompoundTag getExtraInventoriesTag() {
-        return extraInventoriesTag;
+    public void setGraveID(UUID graveID) {
+        this.graveID = graveID;
+    }
+
+    public static IAccessoryHandler getGlobalAccessoryHandler() {
+        return globalAccessoryHandler;
+    }
+
+    public static boolean isInventorioLoaded() {
+        return inventorioLoaded;
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
+
+        if (!tag.hasUUID("GraveID") && tag.contains("Items")) {
+            graveID = UUID.randomUUID();
+
+            CompoundTag legacyData = new CompoundTag();
+            legacyData.put("Items", tag.getList("Items", 10));
+
+            if (tag.contains("ModExtras")) {
+                legacyData.put("ModExtras", tag.getCompound("ModExtras"));
+            }
+
+            GraveStorageManager.saveGrave(graveID, legacyData);
+
+            tag.remove("Items");
+            tag.remove("ModExtras");
+            setChanged();
+        }
+
         if (tag.hasUUID("OwnerUUID")) {
             ownerUUID = tag.getUUID("OwnerUUID");
         }
         if (tag.contains("OwnerName")) {
             ownerName = tag.getString("OwnerName");
         }
-        if (tag.contains("ModExtras")) {
-            extraInventoriesTag = tag.getCompound("ModExtras");
-        } else if (tag.contains("CurioItems")) {
-            extraInventoriesTag = tag.getCompound("CurioItems");
+        if (tag.hasUUID("GraveID")) {
+            graveID = tag.getUUID("GraveID");
         }
-        ContainerHelper.loadAllItems(tag, itemStacks, registries);
     }
 
     @Override
@@ -173,14 +216,13 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         if (ownerName != null) {
             tag.putString("OwnerName", ownerName);
         }
-
-        tag.put("ModExtras", extraInventoriesTag);
-        ContainerHelper.saveAllItems(tag, itemStacks, registries);
+        if (graveID != null) {
+            tag.putUUID("GraveID", graveID);
+        }
     }
 
     @Override
     public void clearContent() {
-        itemStacks.clear();
-        extraInventoriesTag = new CompoundTag();
+        GraveStorageManager.deleteGrave(graveID);
     }
 }

@@ -6,6 +6,8 @@ import me.adoloveschicken.entombed.block.GravestoneBlock;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
 import me.adoloveschicken.entombed.integration.simulated.EndSeaHandler;
+import me.adoloveschicken.entombed.storage.GraveEntry;
+import me.adoloveschicken.entombed.storage.GraveIndex;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -40,6 +42,15 @@ public class DeathHandler {
         level.setBlock(pos, CommonModBlocks.TOMB.defaultBlockState().setValue(GravestoneBlock.FACING, deathFacing), 3);
         if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestoneBlockEntity) {
             gravestoneBlockEntity.storeItems(player);
+            GraveEntry entry = new GraveEntry(
+                    gravestoneBlockEntity.getGraveID(),
+                    level.dimension().location().toString(),
+                    pos.getX(),
+                    pos.getY(),
+                    pos.getZ(),
+                    System.currentTimeMillis()
+            );
+            GraveIndex.addGrave(player.getUUID(), entry);
             level.playSound(null, pos, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.5f, 0.8f);
             level.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.3, 0.3, 0.3, 0.05);
         }

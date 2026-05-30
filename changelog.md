@@ -1,6 +1,6 @@
 ## Entombed 2.0.0
 ### Features
-- [ ] New command for item retrieval (#1)
+- [x] New command for item retrieval (#1)
 - [x] Support for Fabric 1.21.1
 - [x] Support for Inventorio (#2)
 - [x] Support for Trinkets
@@ -15,4 +15,4 @@
 - [x] When right-clicking on a Tomb, it no longer consumes and/or places the block you would normally place
 ### Changes
 - [x] Items with Curse of Binding is now dropped on death and not forcefully equiped
-- [ ] Tomb data is now stored in the world's save file instead of the block entity
+- [x] Tomb data is now stored in the world's save file instead of the block entity
