@@ -1,5 +1,10 @@
 package me.adoloveschicken.entombed.event;
 
+import me.adoloveschicken.entombed.Entombed;
+import me.adoloveschicken.entombed.integration.sable.SableAssemblyHelper;
+import me.adoloveschicken.entombed.integration.simulated.EndSeaHandler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
@@ -15,7 +20,23 @@ public class NeoDeathHandler {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            DeathHandler.onPlayerDeath(player, SABLE_LOADED, AERONAUTICS_LOADED);
+            try {
+                BlockPos gravePos = DeathHandler.onPlayerDeath(player, SABLE_LOADED);
+                if (AERONAUTICS_LOADED && gravePos != null && EndSeaHandler.hasEndSea(player.serverLevel())) {
+                    ServerLevel level = player.serverLevel();
+                    BlockPos adjustedPos = gravePos;
+                    while (adjustedPos.getY() > 1 &&
+                            (level.getBlockState(adjustedPos.below()).canBeReplaced() ||
+                                    !level.getBlockState(adjustedPos.below()).getFluidState().isEmpty())) {
+                        adjustedPos = adjustedPos.below();
+                    }
+                    if (adjustedPos.getY() <= 1) {
+                        SableAssemblyHelper.assembleBlocks(level, adjustedPos);
+                    }
+                }
+            } catch (Exception e) {
+                Entombed.LOGGER.error("Error in death handler", e);
+            }
         }
     }
 

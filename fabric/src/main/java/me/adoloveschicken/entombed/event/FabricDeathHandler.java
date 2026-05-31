@@ -14,7 +14,7 @@ public class FabricDeathHandler {
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> {
             if (entity instanceof ServerPlayer player) {
                 if (DeathHandler.onPlayerDrops(player)) {
-                    DeathHandler.onPlayerDeath(player, SABLE_LOADED, AERONAUTICS_LOADED);
+                    DeathHandler.onPlayerDeath(player, SABLE_LOADED);
                     // Clear main inventory so nothing drops
                     player.getInventory().clearContent();
                     // Clear trinket slots so they don't drop

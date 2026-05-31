@@ -8,9 +8,9 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "me.adoloveschicken.entombed.EntombedFabric"
-    ]
+    "main": ["me.adoloveschicken.entombed.EntombedFabric"],
+    "client": ["me.adoloveschicken.entombed.EntombedFabricClient"],
+    "jade": ["me.adoloveschicken.entombed.integration.jade.TombPlugin"]
   },
   "mixins": [
     "entombed.mixins.json"

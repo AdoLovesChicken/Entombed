@@ -12,16 +12,9 @@ public class EndSeaHandler {
     }
 
     public static void assembleEndSea(ServerLevel level, BlockPos pos) {
-        if (EndSeaHandler.hasEndSea(level)) {
-            while (pos.getY() > 1 &&
-                    (level.getBlockState(pos.below()).canBeReplaced() ||
-                            !level.getBlockState(pos.below()).getFluidState().isEmpty())) {
-                pos = pos.below();
-            }
-            if (pos.getY() <= 1) {
-                SableAssemblyHelper.assembleBlocks(level, pos);
-            }
-        }
+        if (!hasEndSea(level)) return;
 
+        BlockPos floorPos = new BlockPos(pos.getX(), level.getMinBuildHeight() + 1, pos.getZ());
+        SableAssemblyHelper.assembleBlocks(level, floorPos);
     }
 }

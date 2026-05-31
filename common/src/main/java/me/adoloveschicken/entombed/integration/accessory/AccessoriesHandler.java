@@ -31,6 +31,7 @@ public class AccessoriesHandler implements IAccessoryHandler {
                     itemEntry.putInt("SlotIndex", i);
                     itemEntry.put("Item", item.save(player.level().registryAccess()));
                     accessoriesList.add(itemEntry);
+                    container.getAccessories().setItem(i, ItemStack.EMPTY);
                 }
             }
         }

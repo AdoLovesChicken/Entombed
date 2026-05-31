@@ -27,6 +27,7 @@ public class TrinketsHandler implements IAccessoryHandler {
                 itemEntry.putInt("SlotIndex", slotReference.index());
                 itemEntry.put("Item", itemStack.save(player.level().registryAccess()));
                 trinketsList.add(itemEntry);
+                slotReference.inventory().setItem(slotReference.index(), ItemStack.EMPTY);
             }
         });
         tag.put("TrinketItems", trinketsList);

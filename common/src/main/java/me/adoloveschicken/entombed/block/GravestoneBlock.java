@@ -60,6 +60,10 @@ public class GravestoneBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         }
         if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
+            if (grave.getOwnerUUID() == null || grave.getGraveID() == null) {
+                level.removeBlock(pos, false);
+                return InteractionResult.CONSUME;
+            }
             if (player.getUUID().equals(grave.getOwnerUUID())) {
                 grave.returnItems(player);
                 return InteractionResult.CONSUME;
@@ -85,7 +89,7 @@ public class GravestoneBlock extends BaseEntityBlock {
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
-            grave.returnItems(player);
+            if (grave.getOwnerUUID() != null && grave.getGraveID() != null) grave.returnItems(player);
         }
         return super.playerWillDestroy(level, pos, state, player);
     }
@@ -137,5 +141,14 @@ public class GravestoneBlock extends BaseEntityBlock {
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState().setValue(FACING, context.getHorizontalDirection());
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
+    }
+
+    @Override
+    public boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
+        return false;
     }
 }

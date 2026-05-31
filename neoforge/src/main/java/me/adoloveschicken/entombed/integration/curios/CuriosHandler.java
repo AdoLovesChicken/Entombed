@@ -35,6 +35,7 @@ public class CuriosHandler implements IAccessoryHandler {
                             itemEntry.putInt("SlotIndex", i);
                             itemEntry.put("Item", item.save(player.level().registryAccess()));
                             curiosTagList.add(itemEntry);
+                            stacksHandler.getStacks().setStackInSlot(i, ItemStack.EMPTY);
                         }
                     }
                 }
@@ -60,7 +61,6 @@ public class CuriosHandler implements IAccessoryHandler {
                     if (stacksHandler != null) {
                         stacksHandler.getStacks().setStackInSlot(slotIndex, item);
                     }
-                    handler.getCurios().get(slotType).getStacks().setStackInSlot(slotIndex, item);
                 }
             }
         }

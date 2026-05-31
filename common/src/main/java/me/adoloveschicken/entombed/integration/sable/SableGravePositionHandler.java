@@ -47,6 +47,20 @@ public class SableGravePositionHandler {
         return BlockPos.containing(localPos);
     }
 
+    public static BlockPos getSafePositionOnSubLevel(ServerLevel level, BlockPos localPos) {
+        SubLevelAccess subLevel = SableCompanion.INSTANCE.getContaining(level, Vec3.atCenterOf(localPos));
+        double maxY = subLevel != null
+                ? subLevel.boundingBox().maxY()
+                : 256;
+
+        while (!level.getBlockState(localPos).canBeReplaced()
+                || level.getBlockState(localPos.below()).canBeReplaced()) {
+            localPos = localPos.above();
+            if (localPos.getY() > maxY) break;
+        }
+        return localPos;
+    }
+
     // Corrects direction mismatch between sub-levels and the real-world
     public static Direction getLocalFacing(ServerPlayer player) {
         SubLevelAccess subLevel = SableCompanion.INSTANCE.getTrackingOrVehicleSubLevel(player);
