@@ -1,6 +1,6 @@
 package me.adoloveschicken.entombed.block;
 
-import me.adoloveschicken.entombed.integration.IAccessoryHandler;
+import me.adoloveschicken.entombed.Entombed;import me.adoloveschicken.entombed.integration.IAccessoryHandler;
 import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.integration.soulbound.SoulboundHelper;
 import me.adoloveschicken.entombed.storage.GraveIndex;
@@ -77,6 +77,14 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         RegistryAccess registryAccess = player.level().registryAccess();
 
         CompoundTag graveData = GraveStorageManager.loadGrave(graveID);
+        if (graveData == null) {
+            Entombed.LOGGER.error("Could not load grave data for id {}, items lost!", graveID);
+            GraveStorageManager.deleteGrave(graveID);
+            GraveIndex.removeGrave(player.getUUID(), graveID);
+            if (level != null) level.removeBlock(getBlockPos(), false);
+            return;
+        }
+
         ContainerHelper.loadAllItems(graveData, itemStacks, registryAccess);
         CompoundTag extraInventoriesTag = graveData.getCompound("ModExtras");
 

@@ -1,5 +1,6 @@
 package me.adoloveschicken.entombed.storage;
 
+import me.adoloveschicken.entombed.Entombed;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
@@ -28,20 +29,26 @@ public class GraveStorageManager {
         try {
             NbtIo.writeCompressed(inventoryNbt, graveFile);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Entombed.LOGGER.error("Failed to save grave {} - player items may be lost!", graveID, e);
         }
     }
 
     public static CompoundTag loadGrave(UUID graveID) {
-        if (graveDir != null) {
-            Path graveFile = graveDir.resolve(graveID.toString() + ".dat");
-            try {
-                return NbtIo.readCompressed(graveFile, NbtAccounter.unlimitedHeap());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        if (graveDir == null) {
+            Entombed.LOGGER.error("loadGrave called but graveDir is null!");
+            return null;
         }
-        return null;
+        Path graveFile = graveDir.resolve(graveID.toString() + ".dat");
+        if (!Files.exists(graveFile)) {
+            Entombed.LOGGER.error("Grave file missing for UUID {}", graveID);
+            return null;
+        }
+        try {
+            return NbtIo.readCompressed(graveFile, NbtAccounter.unlimitedHeap());
+        } catch (IOException e) {
+            Entombed.LOGGER.error("Failed to read grave file for UUID {}", graveID, e);
+            return null;
+        }
     }
 
     public static void deleteGrave(UUID graveID) {

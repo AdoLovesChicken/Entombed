@@ -20,6 +20,7 @@ public class GraveIndex {
         } catch (IOException e) {
             throw new RuntimeException("Could not create grave index directory", e);
         }
+        load();
     }
 
     public static void save() {
