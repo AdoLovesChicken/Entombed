@@ -31,6 +31,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     private UUID ownerUUID;
     private UUID graveID;
     private String ownerName;
+    private CompoundTag fallbackGraveData = null;
 
     private static IAccessoryHandler globalAccessoryHandler = null;
     private static boolean inventorioLoaded = false;
@@ -69,7 +70,10 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         CompoundTag graveData = new CompoundTag();
         ContainerHelper.saveAllItems(graveData, itemStacks, registryAccess);
         graveData.put("ModExtras", extraInventoriesTag);
-        GraveStorageManager.saveGrave(graveID, graveData);
+        if (!GraveStorageManager.saveGrave(graveID, graveData)) {
+            Entombed.LOGGER.warn("Grave storage failed, falling back to block entity NBT");
+            fallbackGraveData = graveData;
+        }
     }
 
     public void returnItems(Player player) {
@@ -77,6 +81,10 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         RegistryAccess registryAccess = player.level().registryAccess();
 
         CompoundTag graveData = GraveStorageManager.loadGrave(graveID);
+        if (graveData == null) {
+            graveData = fallbackGraveData;
+        }
+
         if (graveData == null) {
             Entombed.LOGGER.error("Could not load grave data for id {}, items lost!", graveID);
             GraveStorageManager.deleteGrave(graveID);
@@ -189,20 +197,24 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         super.loadAdditional(tag, registries);
 
         if (!tag.hasUUID("GraveID") && tag.contains("Items")) {
-            graveID = UUID.randomUUID();
+            if (GraveStorageManager.isInitialised()) {
+                graveID = UUID.randomUUID();
 
-            CompoundTag legacyData = new CompoundTag();
-            legacyData.put("Items", tag.getList("Items", 10));
+                CompoundTag legacyData = new CompoundTag();
+                legacyData.put("Items", tag.getList("Items", 10));
 
-            if (tag.contains("ModExtras")) {
-                legacyData.put("ModExtras", tag.getCompound("ModExtras"));
+                if (tag.contains("ModExtras")) {
+                    legacyData.put("ModExtras", tag.getCompound("ModExtras"));
+                }
+
+                GraveStorageManager.saveGrave(graveID, legacyData);
+
+                tag.remove("Items");
+                tag.remove("ModExtras");
+                setChanged();
+            } else {
+                Entombed.LOGGER.warn("Legacy grave found at {} but storage not ready - skipping migration", getBlockPos());
             }
-
-            GraveStorageManager.saveGrave(graveID, legacyData);
-
-            tag.remove("Items");
-            tag.remove("ModExtras");
-            setChanged();
         }
 
         if (tag.hasUUID("OwnerUUID")) {
@@ -213,6 +225,9 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         }
         if (tag.hasUUID("GraveID")) {
             graveID = tag.getUUID("GraveID");
+        }
+        if (tag.contains("FallbackData")) {
+            fallbackGraveData = tag.getCompound("FallbackData");
         }
     }
 
@@ -227,6 +242,9 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         }
         if (graveID != null) {
             tag.putUUID("GraveID", graveID);
+        }
+        if (fallbackGraveData != null) {
+            tag.put("FallbackData", fallbackGraveData);
         }
     }
 

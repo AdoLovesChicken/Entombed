@@ -1,5 +1,6 @@
 ## Entombed 2.0.1
 ### Features
 - Support for Backpacked
+- Added fallback for tomb storage
 ### Fixes
-### Changes
+- Tomb storage isn't being stored and loaded properly, resulting in item loss

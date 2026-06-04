@@ -21,6 +21,7 @@
     import net.neoforged.neoforge.common.NeoForge;
     import net.neoforged.neoforge.event.RegisterCommandsEvent;
     import net.neoforged.neoforge.event.server.ServerStartingEvent;
+    import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
     import java.nio.file.Path;
 
@@ -37,6 +38,11 @@
                 Path root = event.getServer().getWorldPath(LevelResource.ROOT);
                 GraveStorageManager.initialise(root);
                 GraveIndex.initialise(root);
+            });
+
+            NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, event -> {
+                GraveStorageManager.reset();
+                GraveIndex.reset();
             });
 
             NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {

@@ -34,6 +34,11 @@ public class GraveIndex {
         }
     }
 
+    public static void reset() {
+        indexPath = null;
+        playerGraves = new HashMap<>();
+    }
+
     public static void load() {
         try {
             if (Files.exists(indexPath)) {

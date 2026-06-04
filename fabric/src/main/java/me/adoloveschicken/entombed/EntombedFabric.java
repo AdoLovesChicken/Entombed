@@ -43,6 +43,11 @@ public class EntombedFabric implements ModInitializer {
             GraveIndex.initialise(root);
         });
 
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            GraveStorageManager.reset();
+            GraveIndex.reset();
+        });
+
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             TombCommand.register(dispatcher);
         });
