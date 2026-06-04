@@ -2,7 +2,7 @@ package me.adoloveschicken.entombed.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
-import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
+import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.storage.GraveEntry;
 import me.adoloveschicken.entombed.storage.GraveIndex;
 import me.adoloveschicken.entombed.storage.GraveStorageManager;
@@ -77,6 +77,9 @@ public class TombCommand {
             }
             if (GravestoneBlockEntity.isInventorioLoaded()) {
                 InventorioHandler.returnInventorio(recipient, extraInventoriesTag);
+            }
+            if (GravestoneBlockEntity.isBackpackedLoaded()) {
+                BackpackedHandler.returnBackpack(recipient, extraInventoriesTag);
             }
 
             GraveStorageManager.deleteGrave(entry.getGraveID());

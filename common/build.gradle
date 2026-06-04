@@ -13,7 +13,9 @@ sourceSets {
 dependencies {
     compileOnly "org.spongepowered:mixin:0.8.5"
     annotationProcessor "org.spongepowered:mixin:0.8.5"
-    modCompileOnly("io.wispforest:accessories-common:${project.accessories_version}-mojmap")
+    modCompileOnly "curse.maven:backpacked-352835:${project.backpacked_version}"
+    modCompileOnly("io.wispforest:accessories-common:${project.accessories_version}")
+    modCompileOnly("io.wispforest:accessories-neoforge:${project.accessories_version}")
     modImplementation "maven.modrinth:jade:${project.jade_version}"
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     modCompileOnly "maven.modrinth:trinkets:${project.trinkets_version}"

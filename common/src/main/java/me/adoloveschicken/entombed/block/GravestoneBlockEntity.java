@@ -1,7 +1,7 @@
 package me.adoloveschicken.entombed.block;
 
 import me.adoloveschicken.entombed.integration.IAccessoryHandler;
-import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
+import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.integration.soulbound.SoulboundHelper;
 import me.adoloveschicken.entombed.storage.GraveIndex;
 import me.adoloveschicken.entombed.storage.GraveStorageManager;
@@ -34,14 +34,11 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
 
     private static IAccessoryHandler globalAccessoryHandler = null;
     private static boolean inventorioLoaded = false;
+    private static boolean backpackedLoaded = false;
 
-    public static void setGlobalAccessoryHandler(IAccessoryHandler handler) {
-        globalAccessoryHandler = handler;
-    }
-
-    public static void setInventorioLoaded(boolean isInventorioLoaded) {
-        inventorioLoaded = isInventorioLoaded;
-    }
+    public static void setGlobalAccessoryHandler(IAccessoryHandler handler) { globalAccessoryHandler = handler; }
+    public static void setInventorioLoaded(boolean isInventorioLoaded) { inventorioLoaded = isInventorioLoaded; }
+    public static void setBackpackedLoaded(boolean isBackpackedLoaded) { backpackedLoaded = isBackpackedLoaded; }
 
 
     public GravestoneBlockEntity(BlockPos pos, BlockState blockState) {
@@ -65,6 +62,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         }
         if (globalAccessoryHandler != null) globalAccessoryHandler.storeCurios(player, extraInventoriesTag);
         if (inventorioLoaded) InventorioHandler.storeInventorio(player, extraInventoriesTag);
+        if (backpackedLoaded) BackpackedHandler.storeBackpack(player, extraInventoriesTag);
         ownerUUID = player.getUUID();
         graveID = UUID.randomUUID();
 
@@ -90,6 +88,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         }
         if (globalAccessoryHandler != null) globalAccessoryHandler.returnCurios(player, extraInventoriesTag);
         if (inventorioLoaded) InventorioHandler.returnInventorio(player, extraInventoriesTag);
+        if (backpackedLoaded) BackpackedHandler.returnBackpack(player, extraInventoriesTag);
 
         GraveStorageManager.deleteGrave(graveID);
         GraveIndex.removeGrave(player.getUUID(), graveID);
@@ -174,6 +173,8 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     public static boolean isInventorioLoaded() {
         return inventorioLoaded;
     }
+
+    public static boolean isBackpackedLoaded() { return backpackedLoaded; }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {

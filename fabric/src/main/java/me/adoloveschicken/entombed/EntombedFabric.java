@@ -28,6 +28,7 @@ public class EntombedFabric implements ModInitializer {
         FabricDeathHandler.register();
 
         GravestoneBlockEntity.setInventorioLoaded(FabricLoader.getInstance().isModLoaded("inventorio"));
+        GravestoneBlockEntity.setBackpackedLoaded(FabricLoader.getInstance().isModLoaded("backpacked"));
 
         if (FabricLoader.getInstance().isModLoaded("trinkets")) {
             GravestoneBlockEntity.setGlobalAccessoryHandler(new TrinketsHandler());

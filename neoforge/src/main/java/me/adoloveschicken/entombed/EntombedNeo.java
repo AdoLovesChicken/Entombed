@@ -45,6 +45,7 @@
 
             modEventBus.addListener((FMLCommonSetupEvent event) -> {
                 GravestoneBlockEntity.setInventorioLoaded(ModList.get().isLoaded("inventorio"));
+                GravestoneBlockEntity.setBackpackedLoaded(ModList.get().isLoaded("backpacked"));
 
                 if (ModList.get().isLoaded("curios")) {
                     GravestoneBlockEntity.setGlobalAccessoryHandler(new CuriosHandler());
