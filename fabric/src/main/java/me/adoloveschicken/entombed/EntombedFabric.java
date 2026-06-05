@@ -1,6 +1,5 @@
 package me.adoloveschicken.entombed;
 
-import com.mojang.brigadier.CommandDispatcher;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.block.ModBlockEntities;
 import me.adoloveschicken.entombed.block.ModBlocks;
@@ -9,6 +8,7 @@ import me.adoloveschicken.entombed.event.FabricDeathHandler;
 import me.adoloveschicken.entombed.integration.accessory.AccessoriesHandler;
 import me.adoloveschicken.entombed.integration.trinkets.TrinketsHandler;
 import me.adoloveschicken.entombed.item.ModItems;
+import me.adoloveschicken.entombed.migration.GraveMigrator;
 import me.adoloveschicken.entombed.storage.GraveIndex;
 import me.adoloveschicken.entombed.storage.GraveStorageManager;
 import net.fabricmc.api.ModInitializer;
@@ -38,7 +38,7 @@ public class EntombedFabric implements ModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTING.register(server ->
         {
-            Path root = server.getWorldPath(LevelResource.ROOT);
+            Path root = server.getWorldPath(LevelResource.ROOT).normalize();
             GraveStorageManager.initialise(root);
             GraveIndex.initialise(root);
         });
@@ -46,6 +46,7 @@ public class EntombedFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             GraveStorageManager.reset();
             GraveIndex.reset();
+            GraveMigrator.reset();
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {

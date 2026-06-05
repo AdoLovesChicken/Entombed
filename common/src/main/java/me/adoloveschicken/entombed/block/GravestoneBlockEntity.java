@@ -3,6 +3,7 @@ package me.adoloveschicken.entombed.block;
 import me.adoloveschicken.entombed.Entombed;import me.adoloveschicken.entombed.integration.IAccessoryHandler;
 import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.integration.soulbound.SoulboundHelper;
+import me.adoloveschicken.entombed.migration.GraveMigrator;
 import me.adoloveschicken.entombed.storage.GraveIndex;
 import me.adoloveschicken.entombed.storage.GraveStorageManager;
 import net.minecraft.core.*;
@@ -197,24 +198,18 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         super.loadAdditional(tag, registries);
 
         if (!tag.hasUUID("GraveID") && tag.contains("Items")) {
-            if (GraveStorageManager.isInitialised()) {
-                graveID = UUID.randomUUID();
-
-                CompoundTag legacyData = new CompoundTag();
-                legacyData.put("Items", tag.getList("Items", 10));
-
-                if (tag.contains("ModExtras")) {
-                    legacyData.put("ModExtras", tag.getCompound("ModExtras"));
-                }
-
-                GraveStorageManager.saveGrave(graveID, legacyData);
-
-                tag.remove("Items");
-                tag.remove("ModExtras");
-                setChanged();
-            } else {
-                Entombed.LOGGER.warn("Legacy grave found at {} but storage not ready - skipping migration", getBlockPos());
+            CompoundTag legacyData = new CompoundTag();
+            legacyData.put("Items", tag.getList("Items", 10));
+            if (tag.contains("ModExtras")) {
+                legacyData.put("ModExtras", tag.getCompound("ModExtras"));
             }
+            tag.remove("Items");
+            tag.remove("ModExtras");
+
+            GraveMigrator.migrate(legacyData, newGraveID -> {
+                this.graveID = newGraveID;
+                setChanged();
+            });
         }
 
         if (tag.hasUUID("OwnerUUID")) {

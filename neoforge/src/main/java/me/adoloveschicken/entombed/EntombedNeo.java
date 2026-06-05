@@ -10,6 +10,7 @@
     import me.adoloveschicken.entombed.integration.curios.CuriosHandler;
     import me.adoloveschicken.entombed.integration.henkelmax.HenkelMaxMigrator;
     import me.adoloveschicken.entombed.item.ModItems;
+    import me.adoloveschicken.entombed.migration.GraveMigrator;
     import me.adoloveschicken.entombed.storage.GraveIndex;
     import me.adoloveschicken.entombed.storage.GraveStorageManager;
     import net.minecraft.world.level.storage.LevelResource;
@@ -35,7 +36,7 @@
             HenkelMaxMigrator.register();
 
             NeoForge.EVENT_BUS.addListener(ServerStartingEvent.class, event -> {
-                Path root = event.getServer().getWorldPath(LevelResource.ROOT);
+                Path root = event.getServer().getWorldPath(LevelResource.ROOT).normalize();
                 GraveStorageManager.initialise(root);
                 GraveIndex.initialise(root);
             });
@@ -43,6 +44,7 @@
             NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, event -> {
                 GraveStorageManager.reset();
                 GraveIndex.reset();
+                GraveMigrator.reset();
             });
 
             NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
