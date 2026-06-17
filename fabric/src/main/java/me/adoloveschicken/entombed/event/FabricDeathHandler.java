@@ -1,5 +1,6 @@
 package me.adoloveschicken.entombed.event;
 
+import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,11 +16,9 @@ public class FabricDeathHandler {
             if (entity instanceof ServerPlayer player) {
                 if (DeathHandler.onPlayerDrops(player)) {
                     DeathHandler.onPlayerDeath(player, SABLE_LOADED);
-                    // Clear main inventory so nothing drops
                     player.getInventory().clearContent();
-                    // Clear trinket slots so they don't drop
                     if (TRINKETS_LOADED) {
-                        dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(player).ifPresent(component ->
+                        TrinketsApi.getTrinketComponent(player).ifPresent(component ->
                                 component.getInventory().values().forEach(group ->
                                         group.values().forEach(inv -> inv.clearContent())
                                 )

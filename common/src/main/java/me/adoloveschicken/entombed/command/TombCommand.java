@@ -75,6 +75,9 @@ public class TombCommand {
             if (GravestoneBlockEntity.getGlobalAccessoryHandler() != null) {
                 GravestoneBlockEntity.getGlobalAccessoryHandler().returnCurios(recipient, extraInventoriesTag);
             }
+            if (GravestoneBlockEntity.getSatchelHandler() != null) {
+                GravestoneBlockEntity.getSatchelHandler().returnSatchel(recipient, extraInventoriesTag);
+            }
             if (GravestoneBlockEntity.isInventorioLoaded()) {
                 InventorioHandler.returnInventorio(recipient, extraInventoriesTag);
             }

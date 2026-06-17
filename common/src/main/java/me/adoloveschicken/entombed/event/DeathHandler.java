@@ -33,16 +33,12 @@ public class DeathHandler {
         boolean onSubLevel = sableLoaded && SableGravePositionHandler.isOnSubLevel(player);
 
         BlockPos pos = onSubLevel
-                ? SableGravePositionHandler.getPosition(player)
-                : player.blockPosition();
+                ? SableGravePositionHandler.getSafePositionOnSubLevel(level, SableGravePositionHandler.getPosition(player))
+                : getSafePlacement(level, player.blockPosition());
 
         Direction deathFacing = onSubLevel
                 ? SableGravePositionHandler.getLocalFacing(player)
                 : player.getDirection().getOpposite();
-
-        pos = onSubLevel
-                ? SableGravePositionHandler.getSafePositionOnSubLevel(level, pos)
-                : getSafePlacement(level, pos);
 
         level.setBlock(pos, CommonModBlocks.TOMB.defaultBlockState().setValue(GravestoneBlock.FACING, deathFacing), 3);
         if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestoneBlockEntity) {
@@ -65,7 +61,7 @@ public class DeathHandler {
     private static BlockPos getSafePlacement(ServerLevel level, BlockPos origin) {
         BlockPos pos = new BlockPos(
                 origin.getX(),
-                Math.max(minY, Math.min(maxY, origin.getY())),
+                Math.clamp(origin.getY(), minY, maxY),
                 origin.getZ()
         );
 

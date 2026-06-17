@@ -45,6 +45,7 @@ dependencies {
     modCompileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
     modRuntimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
     modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
+    modImplementation("maven.modrinth:vercte-satchels:${project.satchels_version}")
     modImplementation "dev.simulated_team.simulated:simulated-neoforge-${project.minecraft_version}:${project.simulated_version}"
     modImplementation "maven.modrinth:create-aeronautics:${project.simulated_version}+mc${project.minecraft_version}"
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")

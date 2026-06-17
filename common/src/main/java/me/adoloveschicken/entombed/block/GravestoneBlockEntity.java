@@ -1,12 +1,18 @@
 package me.adoloveschicken.entombed.block;
 
-import me.adoloveschicken.entombed.Entombed;import me.adoloveschicken.entombed.integration.IAccessoryHandler;
-import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
+import me.adoloveschicken.entombed.Entombed;
+import me.adoloveschicken.entombed.integration.IAccessoryHandler;
+import me.adoloveschicken.entombed.integration.ISatchelHandler;
+import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;
+import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.integration.soulbound.SoulboundHelper;
 import me.adoloveschicken.entombed.migration.GraveMigrator;
 import me.adoloveschicken.entombed.storage.GraveIndex;
 import me.adoloveschicken.entombed.storage.GraveStorageManager;
-import net.minecraft.core.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -17,10 +23,8 @@ import net.minecraft.world.Clearable;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -37,11 +41,12 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     private static IAccessoryHandler globalAccessoryHandler = null;
     private static boolean inventorioLoaded = false;
     private static boolean backpackedLoaded = false;
+    private static ISatchelHandler globalSatchelHandler = null;
 
     public static void setGlobalAccessoryHandler(IAccessoryHandler handler) { globalAccessoryHandler = handler; }
+    public static void setGlobalSatchelHandler(ISatchelHandler handler) { globalSatchelHandler = handler; }
     public static void setInventorioLoaded(boolean isInventorioLoaded) { inventorioLoaded = isInventorioLoaded; }
     public static void setBackpackedLoaded(boolean isBackpackedLoaded) { backpackedLoaded = isBackpackedLoaded; }
-
 
     public GravestoneBlockEntity(BlockPos pos, BlockState blockState) {
         super(CommonModBlockEntities.TOMB_BLOCK_ENTITY, pos, blockState);
@@ -63,6 +68,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
             }
         }
         if (globalAccessoryHandler != null) globalAccessoryHandler.storeCurios(player, extraInventoriesTag);
+        if (globalSatchelHandler != null) globalSatchelHandler.storeSatchel(player, extraInventoriesTag);
         if (inventorioLoaded) InventorioHandler.storeInventorio(player, extraInventoriesTag);
         if (backpackedLoaded) BackpackedHandler.storeBackpack(player, extraInventoriesTag);
         ownerUUID = player.getUUID();
@@ -104,6 +110,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
             }
         }
         if (globalAccessoryHandler != null) globalAccessoryHandler.returnCurios(player, extraInventoriesTag);
+        if (globalSatchelHandler != null) globalSatchelHandler.returnSatchel(player, extraInventoriesTag);
         if (inventorioLoaded) InventorioHandler.returnInventorio(player, extraInventoriesTag);
         if (backpackedLoaded) BackpackedHandler.returnBackpack(player, extraInventoriesTag);
 
@@ -186,6 +193,8 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     public static IAccessoryHandler getGlobalAccessoryHandler() {
         return globalAccessoryHandler;
     }
+
+    public static ISatchelHandler getSatchelHandler() { return globalSatchelHandler; }
 
     public static boolean isInventorioLoaded() {
         return inventorioLoaded;
