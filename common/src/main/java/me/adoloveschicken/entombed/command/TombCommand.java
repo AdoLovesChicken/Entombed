@@ -1,6 +1,8 @@
 package me.adoloveschicken.entombed.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import me.adoloveschicken.entombed.api.TombIntegration;
+import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.storage.GraveEntry;
@@ -72,17 +74,8 @@ public class TombCommand {
                 }
             }
 
-            if (GravestoneBlockEntity.getGlobalAccessoryHandler() != null) {
-                GravestoneBlockEntity.getGlobalAccessoryHandler().returnCurios(recipient, extraInventoriesTag);
-            }
-            if (GravestoneBlockEntity.getSatchelHandler() != null) {
-                GravestoneBlockEntity.getSatchelHandler().returnSatchel(recipient, extraInventoriesTag);
-            }
-            if (GravestoneBlockEntity.isInventorioLoaded()) {
-                InventorioHandler.returnInventorio(recipient, extraInventoriesTag);
-            }
-            if (GravestoneBlockEntity.isBackpackedLoaded()) {
-                BackpackedHandler.returnBackpack(recipient, extraInventoriesTag);
+            for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
+                integration.retrieveData(recipient, extraInventoriesTag);
             }
 
             GraveStorageManager.deleteGrave(entry.getGraveID());

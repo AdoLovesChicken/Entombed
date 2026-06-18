@@ -1,11 +1,14 @@
 package me.adoloveschicken.entombed;
 
-import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
+import me.adoloveschicken.entombed.api.TombIntegration;
+import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
 import me.adoloveschicken.entombed.block.ModBlockEntities;
 import me.adoloveschicken.entombed.block.ModBlocks;
 import me.adoloveschicken.entombed.command.TombCommand;
 import me.adoloveschicken.entombed.event.FabricDeathHandler;
 import me.adoloveschicken.entombed.integration.accessory.AccessoriesHandler;
+import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;
+import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.integration.trinkets.TrinketsHandler;
 import me.adoloveschicken.entombed.item.ModItems;
 import me.adoloveschicken.entombed.migration.GraveMigrator;
@@ -18,6 +21,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class EntombedFabric implements ModInitializer {
     @Override
@@ -27,14 +32,16 @@ public class EntombedFabric implements ModInitializer {
         ModItems.register();
         FabricDeathHandler.register();
 
-        GravestoneBlockEntity.setInventorioLoaded(FabricLoader.getInstance().isModLoaded("inventorio"));
-        GravestoneBlockEntity.setBackpackedLoaded(FabricLoader.getInstance().isModLoaded("backpacked"));
+        Map<String, Supplier<TombIntegration>> integrations = Map.of(
+                "inventorio", InventorioHandler::new,
+                "backpacked", BackpackedHandler::new,
+                "trinkets", TrinketsHandler::new,
+                "accessories", AccessoriesHandler::new
+        );
 
-        if (FabricLoader.getInstance().isModLoaded("trinkets")) {
-            GravestoneBlockEntity.setGlobalAccessoryHandler(new TrinketsHandler());
-        } else if (FabricLoader.getInstance().isModLoaded("accessories")) {
-            GravestoneBlockEntity.setGlobalAccessoryHandler(new AccessoriesHandler());
-        }
+        integrations.forEach((modId, handler) -> {
+            if (FabricLoader.getInstance().isModLoaded(modId)) TombIntegrationRegistry.register(handler.get());
+        });
 
         ServerLifecycleEvents.SERVER_STARTING.register(server ->
         {

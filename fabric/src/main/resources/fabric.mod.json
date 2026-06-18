@@ -1,24 +1,22 @@
 {
   "schemaVersion": 1,
-  "id": "entombed",
-  "version": "2.0.3",
-  "name": "Entombed",
-  "description": "A Gravestone (tomb) mod",
-  "authors": ["AdoLovesChicken"],
-  "license": "MIT",
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": ["${mod_authors}"],
+  "license": "${mod_license}",
   "environment": "*",
   "entrypoints": {
     "main": ["me.adoloveschicken.entombed.EntombedFabric"],
     "client": ["me.adoloveschicken.entombed.EntombedFabricClient"],
     "jade": ["me.adoloveschicken.entombed.integration.jade.TombPlugin"]
   },
-  "mixins": [
-    "entombed.mixins.json"
-  ],
+  "mixins": ["entombed.mixins.json"],
   "depends": {
-    "fabricloader": ">=0.16.10",
+    "fabricloader": ">=${fabric_loader_version}",
     "fabric-api": "*",
-    "minecraft": "~1.21.1"
+    "minecraft": "${minecraft_version_range}"
   },
   "suggests": {
     "jade": "*",

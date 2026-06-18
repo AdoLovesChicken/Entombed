@@ -2,6 +2,7 @@ package me.adoloveschicken.entombed.integration.inventorio;
 
 import de.rubixdev.inventorio.player.PlayerInventoryAddon;import de.rubixdev.inventorio.player.inventory.PlayerInventoryExtension;
 import me.adoloveschicken.entombed.Entombed;
+import me.adoloveschicken.entombed.api.TombIntegration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -9,9 +10,15 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;import java.util.List;
 
-public class InventorioHandler {
+public class InventorioHandler implements TombIntegration {
 
-    public static void storeInventorio(Player player, CompoundTag tag) {
+    @Override
+    public String integrationId() {
+        return "inventorio";
+    }
+
+    @Override
+    public void saveData(Player player, CompoundTag tag) {
         PlayerInventoryAddon addon = PlayerInventoryAddon.Companion.getInventoryAddon(player);
         if (addon == null) {
             Entombed.LOGGER.info("Inventorio addon not available, skipping");
@@ -22,7 +29,8 @@ public class InventorioHandler {
         saveList(addon.deepPockets, tag, "InventorioDeepPockets", player);
     }
 
-    public static void returnInventorio(Player player, CompoundTag tag) {
+    @Override
+    public void retrieveData(Player player, CompoundTag tag) {
         PlayerInventoryAddon addon = PlayerInventoryAddon.Companion.getInventoryAddon(player);
         if (addon == null) {
             Entombed.LOGGER.info("Inventorio addon not available, skipping");

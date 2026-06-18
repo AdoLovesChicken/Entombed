@@ -2,7 +2,7 @@ package me.adoloveschicken.entombed.integration.accessory;
 
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
-import me.adoloveschicken.entombed.integration.IAccessoryHandler;
+import me.adoloveschicken.entombed.api.TombIntegration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
@@ -10,10 +10,10 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;
 
-public class AccessoriesHandler implements IAccessoryHandler {
+public class AccessoriesHandler implements TombIntegration {
 
     @Override
-    public void storeCurios(Player player, CompoundTag tag) {
+    public void saveData(Player player, CompoundTag tag) {
         AccessoriesCapability capability = AccessoriesCapability.get(player);
         if (capability == null) return;
 
@@ -40,7 +40,7 @@ public class AccessoriesHandler implements IAccessoryHandler {
     }
 
     @Override
-    public void returnCurios(Player player, CompoundTag tag) {
+    public void retrieveData(Player player, CompoundTag tag) {
         if (!tag.contains("AccessoryItems")) return;
 
         AccessoriesCapability capability = AccessoriesCapability.get(player);
@@ -62,5 +62,10 @@ public class AccessoriesHandler implements IAccessoryHandler {
                 container.getAccessories().setItem(slotIndex, item);
             }
         }
+    }
+
+    @Override
+    public String integrationId() {
+        return "";
     }
 }

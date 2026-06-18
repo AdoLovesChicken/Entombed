@@ -1,10 +1,8 @@
 package me.adoloveschicken.entombed.block;
 
 import me.adoloveschicken.entombed.Entombed;
-import me.adoloveschicken.entombed.integration.IAccessoryHandler;
-import me.adoloveschicken.entombed.integration.ISatchelHandler;
-import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;
-import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
+import me.adoloveschicken.entombed.api.TombIntegration;
+import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
 import me.adoloveschicken.entombed.integration.soulbound.SoulboundHelper;
 import me.adoloveschicken.entombed.migration.GraveMigrator;
 import me.adoloveschicken.entombed.storage.GraveIndex;
@@ -38,16 +36,6 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     private String ownerName;
     private CompoundTag fallbackGraveData = null;
 
-    private static IAccessoryHandler globalAccessoryHandler = null;
-    private static boolean inventorioLoaded = false;
-    private static boolean backpackedLoaded = false;
-    private static ISatchelHandler globalSatchelHandler = null;
-
-    public static void setGlobalAccessoryHandler(IAccessoryHandler handler) { globalAccessoryHandler = handler; }
-    public static void setGlobalSatchelHandler(ISatchelHandler handler) { globalSatchelHandler = handler; }
-    public static void setInventorioLoaded(boolean isInventorioLoaded) { inventorioLoaded = isInventorioLoaded; }
-    public static void setBackpackedLoaded(boolean isBackpackedLoaded) { backpackedLoaded = isBackpackedLoaded; }
-
     public GravestoneBlockEntity(BlockPos pos, BlockState blockState) {
         super(CommonModBlockEntities.TOMB_BLOCK_ENTITY, pos, blockState);
     }
@@ -67,10 +55,11 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
                 player.drop(stack, true);
             }
         }
-        if (globalAccessoryHandler != null) globalAccessoryHandler.storeCurios(player, extraInventoriesTag);
-        if (globalSatchelHandler != null) globalSatchelHandler.storeSatchel(player, extraInventoriesTag);
-        if (inventorioLoaded) InventorioHandler.storeInventorio(player, extraInventoriesTag);
-        if (backpackedLoaded) BackpackedHandler.storeBackpack(player, extraInventoriesTag);
+
+        for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
+            integration.saveData(player, extraInventoriesTag);
+        }
+
         ownerUUID = player.getUUID();
         graveID = UUID.randomUUID();
 
@@ -109,11 +98,10 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
                 restoreItem(player, i, itemStack.copy());
             }
         }
-        if (globalAccessoryHandler != null) globalAccessoryHandler.returnCurios(player, extraInventoriesTag);
-        if (globalSatchelHandler != null) globalSatchelHandler.returnSatchel(player, extraInventoriesTag);
-        if (inventorioLoaded) InventorioHandler.returnInventorio(player, extraInventoriesTag);
-        if (backpackedLoaded) BackpackedHandler.returnBackpack(player, extraInventoriesTag);
 
+        for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
+            integration.retrieveData(player, extraInventoriesTag);
+        }
         GraveStorageManager.deleteGrave(graveID);
         GraveIndex.removeGrave(player.getUUID(), graveID);
         itemStacks.clear();
@@ -189,18 +177,6 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     public void setGraveID(UUID graveID) {
         this.graveID = graveID;
     }
-
-    public static IAccessoryHandler getGlobalAccessoryHandler() {
-        return globalAccessoryHandler;
-    }
-
-    public static ISatchelHandler getSatchelHandler() { return globalSatchelHandler; }
-
-    public static boolean isInventorioLoaded() {
-        return inventorioLoaded;
-    }
-
-    public static boolean isBackpackedLoaded() { return backpackedLoaded; }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {

@@ -1,14 +1,16 @@
 package me.adoloveschicken.entombed.integration.backpacked;
 
 import com.mrcrayfish.backpacked.BackpackHelper;
+import me.adoloveschicken.entombed.api.TombIntegration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-public class BackpackedHandler {
+public class BackpackedHandler implements TombIntegration {
 
-    public static void storeBackpack(Player player, CompoundTag extraTag) {
+    @Override
+    public void saveData(Player player, CompoundTag tag) {
         ListTag backpackList = new ListTag();
         int maxBackpacks = BackpackHelper.getBackpackUnlockableSlots(player).getUnlockCount();
 
@@ -23,13 +25,14 @@ public class BackpackedHandler {
         }
 
         if (!backpackList.isEmpty()) {
-            extraTag.put("BackpackedItems", backpackList);
+            tag.put("BackpackedItems", backpackList);
         }
     }
 
-    public static void returnBackpack(Player player, CompoundTag extraTag) {
-        if (extraTag.contains("BackpackedItems")) {
-            ListTag backpackList = extraTag.getList("BackpackedItems", 10);
+    @Override
+    public void retrieveData(Player player, CompoundTag tag) {
+        if (tag.contains("BackpackedItems")) {
+            ListTag backpackList = tag.getList("BackpackedItems", 10);
             for (int i = 0; i < backpackList.size(); i++) {
                 CompoundTag backpackTag = backpackList.getCompound(i);
                 int index = backpackTag.getInt("Index");
@@ -39,5 +42,10 @@ public class BackpackedHandler {
                 }
             }
         }
+    }
+
+    @Override
+    public String integrationId() {
+        return "backpacked";
     }
 }

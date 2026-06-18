@@ -1,14 +1,16 @@
     package me.adoloveschicken.entombed;
 
-    import me.adoloveschicken.entombed.block.GravestoneBlock;
-    import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
+    import me.adoloveschicken.entombed.api.TombIntegration;
+    import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
     import me.adoloveschicken.entombed.block.ModBlockEntities;
     import me.adoloveschicken.entombed.block.ModBlocks;
     import me.adoloveschicken.entombed.command.TombCommand;
     import me.adoloveschicken.entombed.event.NeoDeathHandler;
     import me.adoloveschicken.entombed.integration.accessory.AccessoriesHandler;
+    import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;
     import me.adoloveschicken.entombed.integration.curios.CuriosHandler;
     import me.adoloveschicken.entombed.integration.henkelmax.HenkelMaxMigrator;
+    import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
     import me.adoloveschicken.entombed.integration.satchels.SatchelsHandler;
     import me.adoloveschicken.entombed.item.ModItems;
     import me.adoloveschicken.entombed.migration.GraveMigrator;
@@ -26,6 +28,8 @@
     import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
     import java.nio.file.Path;
+    import java.util.Map;
+    import java.util.function.Supplier;
 
     @Mod(Entombed.MODID)
     public class EntombedNeo {
@@ -35,6 +39,8 @@
             ModBlockEntities.register(modEventBus);
             NeoDeathHandler.register();
             HenkelMaxMigrator.register();
+
+//            modContainer.registerConfig(ModConfig.Type.COMMON, NeoConfig.CONFIG_SPEC);
 
             NeoForge.EVENT_BUS.addListener(ServerStartingEvent.class, event -> {
                 Path root = event.getServer().getWorldPath(LevelResource.ROOT).normalize();
@@ -53,18 +59,17 @@
             });
 
             modEventBus.addListener((FMLCommonSetupEvent event) -> {
-                GravestoneBlockEntity.setInventorioLoaded(ModList.get().isLoaded("inventorio"));
-                GravestoneBlockEntity.setBackpackedLoaded(ModList.get().isLoaded("backpacked"));
+                Map<String, Supplier<TombIntegration>> integrations = Map.of(
+                        "inventorio", InventorioHandler::new,
+                        "backpacked", BackpackedHandler::new,
+                        "satchels", SatchelsHandler::new,
+                        "curios", CuriosHandler::new,
+                        "accessories", AccessoriesHandler::new
+                );
 
-                if (ModList.get().isLoaded("satchels")) {
-                    GravestoneBlockEntity.setGlobalSatchelHandler(new SatchelsHandler());
-                }
-
-                if (ModList.get().isLoaded("curios")) {
-                    GravestoneBlockEntity.setGlobalAccessoryHandler(new CuriosHandler());
-                } else if (ModList.get().isLoaded("accessories")) {
-                    GravestoneBlockEntity.setGlobalAccessoryHandler(new AccessoriesHandler());
-                }
+                integrations.forEach((modId, handler) -> {
+                    if (ModList.get().isLoaded(modId)) TombIntegrationRegistry.register(handler.get());
+                });
             });
         }
     }

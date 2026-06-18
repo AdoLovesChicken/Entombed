@@ -1,0 +1,9 @@
+{
+  "block.entombed.tomb": "Tombe",
+  "entombed.tomb_owner": "Propriétaire : %s",
+  "entombed.tomb_unclaimed": "Non réclamée",
+  "entombed.stolen_tomb": "Vous avez volé la tombe d'un autre joueur",
+  "entombed.owner_mismatch": "Ce n'est pas votre tombe",
+  "config.jade.plugin_entombed.tomb_owner": "Propriétaire de la tombe",
+  "config.jade.plugin_entombed.tomb_unclaimed": "Propriétaire inconnu"
+}

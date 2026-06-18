@@ -1,6 +1,6 @@
 package me.adoloveschicken.entombed.integration.curios;
 
-import me.adoloveschicken.entombed.integration.IAccessoryHandler;
+import me.adoloveschicken.entombed.api.TombIntegration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
@@ -14,9 +14,10 @@ import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 import java.util.Map;
 import java.util.Optional;
 
-public class CuriosHandler implements IAccessoryHandler {
+public class CuriosHandler implements TombIntegration {
+
     @Override
-    public void storeCurios(Player player, CompoundTag tag) {
+    public void saveData(Player player, CompoundTag tag) {
         if (ModList.get().isLoaded("curios")) {
             Optional<ICuriosItemHandler> curiosInventory = CuriosApi.getCuriosInventory(player);
             if (curiosInventory.isPresent()) {
@@ -45,7 +46,7 @@ public class CuriosHandler implements IAccessoryHandler {
     }
 
     @Override
-    public void returnCurios(Player player, CompoundTag tag) {
+    public void retrieveData(Player player, CompoundTag tag) {
         if (ModList.get().isLoaded("curios")) {
             Optional<ICuriosItemHandler> curiosInventory = CuriosApi.getCuriosInventory(player);
             if (curiosInventory.isPresent() && tag.contains("CurioItems")) {
@@ -64,5 +65,10 @@ public class CuriosHandler implements IAccessoryHandler {
                 }
             }
         }
+    }
+
+    @Override
+    public String integrationId() {
+        return "curios";
     }
 }
