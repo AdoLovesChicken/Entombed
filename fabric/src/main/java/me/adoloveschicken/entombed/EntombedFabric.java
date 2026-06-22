@@ -40,7 +40,7 @@ public class EntombedFabric implements ModInitializer {
                 "accessories", AccessoriesHandler::new
         );
 
-        Config.load();
+        Config.load(FabricLoader.getInstance().getConfigDir());
 
         integrations.forEach((modId, handler) -> {
             if (FabricLoader.getInstance().isModLoaded(modId)) TombIntegrationRegistry.register(handler.get());

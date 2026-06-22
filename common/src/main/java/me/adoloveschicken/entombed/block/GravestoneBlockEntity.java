@@ -3,6 +3,7 @@ package me.adoloveschicken.entombed.block;
 import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.api.TombIntegration;
 import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
+import me.adoloveschicken.entombed.config.ConfigData;
 import me.adoloveschicken.entombed.integration.soulbound.SoulboundHelper;
 import me.adoloveschicken.entombed.migration.GraveMigrator;
 import me.adoloveschicken.entombed.storage.GraveIndex;
@@ -14,6 +15,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -21,6 +23,7 @@ import net.minecraft.world.Clearable;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -40,9 +43,53 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         super(CommonModBlockEntities.TOMB_BLOCK_ENTITY, pos, blockState);
     }
 
-    public void storeItems(Player player) {
+    public void storeAll(Player player) {
+        ownerUUID = player.getUUID();
+        graveID = UUID.randomUUID();
+
+        CompoundTag graveData = new CompoundTag();
+
+        storeItems(player, graveData);
+        storeExperience(player, graveData);
+
+        CompoundTag integrationsTag = new CompoundTag();
+        for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
+            integration.saveData(player, integrationsTag);
+        }
+        graveData.put("ModExtras", integrationsTag);
+
+        if (!GraveStorageManager.saveGrave(graveID, graveData)) {
+            Entombed.LOGGER.warn("Grave storage failed, falling back to block entity NBT");
+            fallbackGraveData = graveData;
+        }
+    }
+
+    public void restoreAll(Player player) {
+        CompoundTag loadedGraveData = GraveStorageManager.loadGrave(graveID);
+        CompoundTag graveData = loadedGraveData == null
+                ? fallbackGraveData
+                : loadedGraveData;
+
+        if (graveData == null) {
+            Entombed.LOGGER.error("Could not load grave data for id {}, items lost!", graveID);
+            removeGraveBlock(player, false);
+            return;
+        }
+
+        restoreItems(player, graveData);
+        restoreExperience(player, graveData);
+
+        CompoundTag integrationsTag = graveData.getCompound("ModExtras");
+        for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
+            integration.retrieveData(player, integrationsTag);
+        }
+
+        setChanged();
+        removeGraveBlock(player, true);
+    }
+
+    public void storeItems(Player player, CompoundTag graveData) {
         final NonNullList<ItemStack> itemStacks = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
-        CompoundTag extraInventoriesTag = new CompoundTag();
 
         RegistryAccess registryAccess = player.level().registryAccess();
         for (int i = 0; i < Math.min(player.getInventory().getContainerSize(), itemStacks.size()); i++) {
@@ -56,41 +103,14 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
             }
         }
 
-        for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
-            integration.saveData(player, extraInventoriesTag);
-        }
-
-        ownerUUID = player.getUUID();
-        graveID = UUID.randomUUID();
-
-        CompoundTag graveData = new CompoundTag();
         ContainerHelper.saveAllItems(graveData, itemStacks, registryAccess);
-        graveData.put("ModExtras", extraInventoriesTag);
-        if (!GraveStorageManager.saveGrave(graveID, graveData)) {
-            Entombed.LOGGER.warn("Grave storage failed, falling back to block entity NBT");
-            fallbackGraveData = graveData;
-        }
     }
 
-    public void returnItems(Player player) {
+    public void restoreItems(Player player, CompoundTag graveData) {
         final NonNullList<ItemStack> itemStacks = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
         RegistryAccess registryAccess = player.level().registryAccess();
 
-        CompoundTag graveData = GraveStorageManager.loadGrave(graveID);
-        if (graveData == null) {
-            graveData = fallbackGraveData;
-        }
-
-        if (graveData == null) {
-            Entombed.LOGGER.error("Could not load grave data for id {}, items lost!", graveID);
-            GraveStorageManager.deleteGrave(graveID);
-            GraveIndex.removeGrave(player.getUUID(), graveID);
-            if (level != null) level.removeBlock(getBlockPos(), false);
-            return;
-        }
-
         ContainerHelper.loadAllItems(graveData, itemStacks, registryAccess);
-        CompoundTag extraInventoriesTag = graveData.getCompound("ModExtras");
 
         for (int i = 0; i < itemStacks.size(); i++) {
             ItemStack itemStack = itemStacks.get(i);
@@ -98,49 +118,59 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
                 restoreItem(player, i, itemStack.copy());
             }
         }
-
-        for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
-            integration.retrieveData(player, extraInventoriesTag);
-        }
-        GraveStorageManager.deleteGrave(graveID);
-        GraveIndex.removeGrave(player.getUUID(), graveID);
         itemStacks.clear();
-        setChanged();
-        if (level != null) {
-            playEffects();
-            level.removeBlock(getBlockPos(), false);
-        }
     }
+
+    public static void storeExperience(Player player, CompoundTag graveData) {
+        graveData.putInt("ExpPoints", decideExperience(player));
+    }
+
+    public static int decideExperience(Player player) {
+        ConfigData.DropBehavior experienceDropBehavior = ConfigData.experienceOnDeath;
+        if (experienceDropBehavior == ConfigData.DropBehavior.DEFAULT) {
+            experienceDropBehavior = ConfigData.itemsOnDeath;
+        }
+        return switch (experienceDropBehavior) {
+            case TOMBED -> player.totalExperience;
+            case PARTIAL -> player.getExperienceReward((ServerLevel) player.level(), null);
+            case PERCENT_KEPT -> Math.round(player.totalExperience * ConfigData.experiencePercentKept / 10.0f);
+            default -> 0;
+        };
+    }
+
+    public static void restoreExperience(Player player, CompoundTag graveData) {
+        player.giveExperiencePoints(graveData.getInt("ExpPoints"));
+    }
+
 
     public static void restoreItem(Player player, int slot, ItemStack stack) {
         if (player.getInventory().getItem(slot).isEmpty()) {
-            if (hasVanishingCurse(stack, player.level().registryAccess())) {
-                return;
-            }
+            RegistryAccess registryAccess = player.level().registryAccess();
 
-            if (hasBindingCurse(stack, player.level().registryAccess())) {
+            if (hasVanishingCurse(stack, registryAccess)) return;
+            if (hasBindingCurse(stack, registryAccess)) {
                 player.drop(stack, false);
                 return;
             }
-
             player.getInventory().setItem(slot, stack);
 
         } else if (!player.addItem(stack)) {
-                player.drop(stack, false);
+            player.drop(stack, false);
         }
     }
 
     public static boolean hasVanishingCurse(ItemStack stack, RegistryAccess registryAccess) {
-        return EnchantmentHelper.getItemEnchantmentLevel(
-                registryAccess.lookupOrThrow(Registries.ENCHANTMENT)
-                        .getOrThrow(Enchantments.VANISHING_CURSE), stack
-        ) > 0;
+        return hasEnchantment(stack, registryAccess, Enchantments.VANISHING_CURSE);
     }
 
     public static boolean hasBindingCurse(ItemStack stack, RegistryAccess registryAccess) {
+        return hasEnchantment(stack, registryAccess, Enchantments.BINDING_CURSE);
+    }
+
+    public static boolean hasEnchantment(ItemStack stack, RegistryAccess registryAccess, ResourceKey<Enchantment> enchantment) {
         return EnchantmentHelper.getItemEnchantmentLevel(
                 registryAccess.lookupOrThrow(Registries.ENCHANTMENT)
-                        .getOrThrow(Enchantments.BINDING_CURSE), stack
+                        .getOrThrow(enchantment), stack
         ) > 0;
     }
 
@@ -176,6 +206,15 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
 
     public void setGraveID(UUID graveID) {
         this.graveID = graveID;
+    }
+
+    public void removeGraveBlock(Player player, boolean useEffects) {
+        GraveStorageManager.deleteGrave(graveID);
+        GraveIndex.removeGrave(player.getUUID(), graveID);
+        if (level != null) {
+            if (useEffects) playEffects();
+            level.removeBlock(getBlockPos(), false);
+        }
     }
 
     @Override

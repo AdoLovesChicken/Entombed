@@ -67,10 +67,10 @@ public class GravestoneBlock extends BaseEntityBlock {
                 return InteractionResult.CONSUME;
             }
             if (player.getUUID().equals(grave.getOwnerUUID())) {
-                grave.returnItems(player);
+                grave.restoreAll(player);
                 return InteractionResult.CONSUME;
             } else if (!ConfigData.requireOpForRetrieve || player instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
-                grave.returnItems(player);
+                grave.restoreAll(player);
                 player.displayClientMessage(Component.translatable("entombed.stolen_tomb")
                         .withColor(0xFF746C), true);
                 return InteractionResult.CONSUME;
@@ -93,7 +93,7 @@ public class GravestoneBlock extends BaseEntityBlock {
         if (!level.isClientSide
                 && ConfigData.tombsCanBeBrokenDirectly
                 && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
-            if (grave.getOwnerUUID() != null && grave.getGraveID() != null) grave.returnItems(player);
+            if (grave.getOwnerUUID() != null && grave.getGraveID() != null) grave.restoreAll(player);
         }
         return super.playerWillDestroy(level, pos, state, player);
     }

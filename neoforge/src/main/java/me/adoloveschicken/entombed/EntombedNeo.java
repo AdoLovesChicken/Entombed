@@ -23,6 +23,7 @@
     import net.neoforged.fml.ModList;
     import net.neoforged.fml.common.Mod;
     import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+    import net.neoforged.fml.loading.FMLPaths;
     import net.neoforged.neoforge.common.NeoForge;
     import net.neoforged.neoforge.event.RegisterCommandsEvent;
     import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -41,7 +42,7 @@
             NeoDeathHandler.register();
             HenkelMaxMigrator.register();
 
-            Config.load();
+            Config.load(FMLPaths.CONFIGDIR.get());
 
             NeoForge.EVENT_BUS.addListener(ServerStartingEvent.class, event -> {
                 Path root = event.getServer().getWorldPath(LevelResource.ROOT).normalize();

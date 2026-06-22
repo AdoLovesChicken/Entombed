@@ -11,6 +11,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 
 public class NeoDeathHandler {
 
@@ -22,6 +23,8 @@ public class NeoDeathHandler {
         if (event.getEntity() instanceof ServerPlayer player) {
             try {
                 BlockPos gravePos = DeathHandler.onPlayerDeath(player, SABLE_LOADED);
+                player.skipDropExperience();
+
                 if (AERONAUTICS_LOADED && gravePos != null && EndSeaHandler.hasEndSea(player.serverLevel())) {
                     ServerLevel level = player.serverLevel();
                     BlockPos adjustedPos = gravePos;
@@ -46,6 +49,13 @@ public class NeoDeathHandler {
             if (DeathHandler.onPlayerDrops(player)) {
                 event.setCanceled(true);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onExperienceDrops(LivingExperienceDropEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            event.setCanceled(true);
         }
     }
 

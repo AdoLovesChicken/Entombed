@@ -62,31 +62,12 @@ public class TombCommand {
     private static void retrieveItems(Player target, Player recipient, RegistryAccess registryAccess) {
         GraveEntry entry = GraveIndex.getLastGrave(target.getUUID());
         if (entry != null) {
-            CompoundTag graveData = GraveStorageManager.loadGrave(entry.getGraveID());
-            final NonNullList<ItemStack> itemStacks = NonNullList.withSize(GravestoneBlockEntity.INVENTORY_SIZE, ItemStack.EMPTY);
-            ContainerHelper.loadAllItems(graveData, itemStacks, registryAccess);
-            CompoundTag extraInventoriesTag = graveData.getCompound("ModExtras");
-
-            for (int i = 0; i < itemStacks.size(); i++) {
-                ItemStack itemStack = itemStacks.get(i);
-                if (!itemStack.isEmpty()) {
-                    GravestoneBlockEntity.restoreItem(recipient, i, itemStack.copy());
-                }
-            }
-
-            for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
-                integration.retrieveData(recipient, extraInventoriesTag);
-            }
-
-            GraveStorageManager.deleteGrave(entry.getGraveID());
-            GraveIndex.removeGrave(target.getUUID(), entry.getGraveID());
-
             ResourceLocation dimensionId = ResourceLocation.parse(entry.getDimension());
             ServerLevel graveLevel = recipient.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
             if (graveLevel != null) {
                 BlockPos gravePos = new BlockPos(entry.getX(), entry.getY(), entry.getZ());
-                if (graveLevel.getBlockEntity(gravePos) instanceof GravestoneBlockEntity) {
-                    graveLevel.removeBlock(gravePos, false);
+                if (graveLevel.getBlockEntity(gravePos) instanceof GravestoneBlockEntity grave) {
+                    grave.restoreAll(recipient);
                 }
             }
 

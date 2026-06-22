@@ -4,6 +4,7 @@ import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.block.CommonModBlocks;
 import me.adoloveschicken.entombed.block.GravestoneBlock;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
+import me.adoloveschicken.entombed.config.ConfigData;
 import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
 import me.adoloveschicken.entombed.storage.GraveEntry;
 import me.adoloveschicken.entombed.storage.GraveIndex;
@@ -42,7 +43,7 @@ public class DeathHandler {
 
         level.setBlock(pos, CommonModBlocks.TOMB.defaultBlockState().setValue(GravestoneBlock.FACING, deathFacing), 3);
         if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestoneBlockEntity) {
-            gravestoneBlockEntity.storeItems(player);
+            gravestoneBlockEntity.storeAll(player);
             GraveEntry entry = new GraveEntry(
                     gravestoneBlockEntity.getGraveID(),
                     level.dimension().location().toString(),
