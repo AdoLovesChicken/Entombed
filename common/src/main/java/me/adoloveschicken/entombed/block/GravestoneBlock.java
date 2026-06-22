@@ -1,6 +1,7 @@
 package me.adoloveschicken.entombed.block;
 
 import com.mojang.serialization.MapCodec;
+import me.adoloveschicken.entombed.config.ConfigData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -29,6 +30,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,7 +69,7 @@ public class GravestoneBlock extends BaseEntityBlock {
             if (player.getUUID().equals(grave.getOwnerUUID())) {
                 grave.returnItems(player);
                 return InteractionResult.CONSUME;
-            } else if (player instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
+            } else if (!ConfigData.requireOpForRetrieve || player instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
                 grave.returnItems(player);
                 player.displayClientMessage(Component.translatable("entombed.stolen_tomb")
                         .withColor(0xFF746C), true);
@@ -88,7 +90,9 @@ public class GravestoneBlock extends BaseEntityBlock {
     // Returns items if grave is destroyed directly by player
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
+        if (!level.isClientSide
+                && ConfigData.tombsCanBeBrokenDirectly
+                && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
             if (grave.getOwnerUUID() != null && grave.getGraveID() != null) grave.returnItems(player);
         }
         return super.playerWillDestroy(level, pos, state, player);
@@ -96,13 +100,15 @@ public class GravestoneBlock extends BaseEntityBlock {
 
     // Stops entities from destroying tomb
     public boolean canEntityDestroy(BlockState state, BlockGetter level, BlockPos pos, Entity entity) {
-        return false;
+        return ConfigData.tombsCanBeBrokenIndirectly;
     }
 
     // Stops explosions from destroying tomb
     @Override
     public float getExplosionResistance() {
-        return Float.MAX_VALUE;
+        return ConfigData.tombsCanBeBrokenIndirectly
+                ? 10F
+                : Float.MAX_VALUE;
     }
 
     // Corrects block directions
@@ -131,6 +137,12 @@ public class GravestoneBlock extends BaseEntityBlock {
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (!ConfigData.tombsHaveCollision) return Shapes.empty();
+        return getShape(state, level, pos, context);
     }
 
     @Override

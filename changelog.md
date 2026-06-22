@@ -1,8 +1,7 @@
-## Entombed 2.1.0
+## Entombed 2.2.0
 ### Features
-- New API for mod integration
-- French localisation car que je parle francais
+- New Config
 ### Changes
-- Updated English localisation
+- Tombs can now optionally be retrieved by other players
+- Tombs can now optionally be destroyed indirectly
 ### Fixes:
-- Fixed compat with Vercte's Satchels. Thanks @vercte!

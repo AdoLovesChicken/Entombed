@@ -6,8 +6,9 @@ public class ConfigData {
 
     /*-- Vanilla --*/
     // Tomb settings
-    public static boolean tombsHaveHitboxes = true;
+    public static boolean tombsHaveCollision = true;
     public static boolean requireOpForRetrieve = true;
+    public static boolean tombsCanBeBrokenDirectly = false;
     public static boolean tombsCanBeBrokenIndirectly = false;
 
     // Keep items, xp:
