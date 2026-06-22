@@ -5,6 +5,7 @@ import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
 import me.adoloveschicken.entombed.block.ModBlockEntities;
 import me.adoloveschicken.entombed.block.ModBlocks;
 import me.adoloveschicken.entombed.command.TombCommand;
+import me.adoloveschicken.entombed.config.Config;
 import me.adoloveschicken.entombed.event.FabricDeathHandler;
 import me.adoloveschicken.entombed.integration.accessory.AccessoriesHandler;
 import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;
@@ -38,6 +39,8 @@ public class EntombedFabric implements ModInitializer {
                 "trinkets", TrinketsHandler::new,
                 "accessories", AccessoriesHandler::new
         );
+
+        Config.load();
 
         integrations.forEach((modId, handler) -> {
             if (FabricLoader.getInstance().isModLoaded(modId)) TombIntegrationRegistry.register(handler.get());

@@ -5,6 +5,7 @@
     import me.adoloveschicken.entombed.block.ModBlockEntities;
     import me.adoloveschicken.entombed.block.ModBlocks;
     import me.adoloveschicken.entombed.command.TombCommand;
+    import me.adoloveschicken.entombed.config.Config;
     import me.adoloveschicken.entombed.event.NeoDeathHandler;
     import me.adoloveschicken.entombed.integration.accessory.AccessoriesHandler;
     import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;
@@ -40,7 +41,7 @@
             NeoDeathHandler.register();
             HenkelMaxMigrator.register();
 
-//            modContainer.registerConfig(ModConfig.Type.COMMON, NeoConfig.CONFIG_SPEC);
+            Config.load();
 
             NeoForge.EVENT_BUS.addListener(ServerStartingEvent.class, event -> {
                 Path root = event.getServer().getWorldPath(LevelResource.ROOT).normalize();
