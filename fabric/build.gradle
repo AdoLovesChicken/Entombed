@@ -34,7 +34,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
+    modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version_fabric}"
     modCompileOnly "curse.maven:backpacked-352835:7866686"
+    modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
     modCompileOnly("maven.modrinth:inventorio:${project.inventorio_fabric_version}")
     modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
     modImplementation "maven.modrinth:jade:${project.jade_fabric_version}"
@@ -53,7 +55,8 @@ tasks.named('processResources') {
             mod_license            : mod_license,
             minecraft_version_range: minecraft_version_range,
             fabric_loader_version  : fabric_loader_version,
-            fabric_api_version     : fabric_api_version
+            fabric_api_version     : fabric_api_version,
+            yacl_version_fabric    : yacl_version_fabric
     ]
     inputs.properties replaceProperties
 

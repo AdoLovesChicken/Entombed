@@ -6,6 +6,7 @@
     import me.adoloveschicken.entombed.block.ModBlocks;
     import me.adoloveschicken.entombed.command.TombCommand;
     import me.adoloveschicken.entombed.config.Config;
+    import me.adoloveschicken.entombed.config.screen.YaclConfigBuilder;
     import me.adoloveschicken.entombed.event.NeoDeathHandler;
     import me.adoloveschicken.entombed.integration.accessory.AccessoriesHandler;
     import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;
@@ -24,6 +25,7 @@
     import net.neoforged.fml.common.Mod;
     import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
     import net.neoforged.fml.loading.FMLPaths;
+    import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
     import net.neoforged.neoforge.common.NeoForge;
     import net.neoforged.neoforge.event.RegisterCommandsEvent;
     import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -43,6 +45,11 @@
             HenkelMaxMigrator.register();
 
             Config.load(FMLPaths.CONFIGDIR.get());
+
+            modContainer.registerExtensionPoint(
+                    IConfigScreenFactory.class,
+                    (minecraft, parent) -> YaclConfigBuilder.createScreen(parent)
+            );
 
             NeoForge.EVENT_BUS.addListener(ServerStartingEvent.class, event -> {
                 Path root = event.getServer().getWorldPath(LevelResource.ROOT).normalize();

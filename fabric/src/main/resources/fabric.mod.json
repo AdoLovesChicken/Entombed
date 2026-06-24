@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "${mod_id}",
+  "icon": "icon.png",
   "version": "${mod_version}",
   "name": "${mod_name}",
   "description": "${mod_description}",
@@ -10,18 +11,29 @@
   "entrypoints": {
     "main": ["me.adoloveschicken.entombed.EntombedFabric"],
     "client": ["me.adoloveschicken.entombed.EntombedFabricClient"],
-    "jade": ["me.adoloveschicken.entombed.integration.jade.TombPlugin"]
+    "jade": ["me.adoloveschicken.entombed.integration.jade.TombPlugin"],
+    "modmenu": ["me.adoloveschicken.entombed.integration.modmenu.ModMenuIntegration"]
   },
   "mixins": ["entombed.mixins.json"],
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
     "fabric-api": "*",
-    "minecraft": "${minecraft_version_range}"
+    "minecraft": "${minecraft_version_range}",
+    "yet_another_config_lib_v3": ">=${yacl_version_fabric}"
   },
   "suggests": {
     "jade": "*",
     "trinkets": "*",
     "accessories": "*",
-    "inventorio": "*"
+    "inventorio": "*",
+    "modmenu": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.source": "https://github.com/AdoLovesChicken/Entombed"
+      },
+      "update_checker": true
+    }
   }
 }

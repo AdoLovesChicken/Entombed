@@ -4,6 +4,40 @@
   "entombed.tomb_unclaimed": "Unknown",
   "entombed.stolen_tomb": "You have stolen someone else's tomb",
   "entombed.owner_mismatch": "This is not your tomb",
+
+  "entombed.gui.config": "Entombed Configuration",
+  "entombed.gui.category.vanilla": "General",
+  "entombed.gui.category.integrations": "Integrations",
+  "entombed.gui.group.drop_behaviors": "Drop Behaviors",
+  "entombed.gui.group.percents": "Percentages",
+
+  "entombed.config.tombsHaveCollision": "Tombs Have Collision",
+  "entombed.config.requireOpForRetrieve": "Require OP for Retrieve",
+  "entombed.config.tombsCanBeBrokenDirectly": "Tombs can be Broken by Players",
+  "entombed.config.tombsCanBeBrokenIndirectly": "Tombs can be Broken Indirectly",
+
+  "entombed.config.itemsOnDeath": "Items On Death Behavior",
+  "entombed.config.mainInvOnDeath": "Main Inventory On Death Behavior",
+  "entombed.config.hotbarOnDeath": "Hotbar On Death Behavior",
+  "entombed.config.armorOnDeath": "Armor On Death Behavior",
+  "entombed.config.experienceOnDeath": "Experience On Death Behavior",
+
+  "entombed.config.itemPercentKept": "Item Percent Kept",
+  "entombed.config.durabilityPercent": "Durability Percent Kept",
+  "entombed.config.experiencePercentKept": "Experience Percent Kept",
+
+  "entombed.config.tombsCanBecomeSublevel": "Tombs Can Become Sublevels",
+  "entombed.config.tombsFloatInLiquid": "Tombs Float in Liquid",
+  "entombed.config.allTombsAreSublevel": "All Tombs Are Sublevels",
+
+  "entombed.config.dropBehavior.KEPT": "Kept in Inventory",
+  "entombed.config.dropBehavior.TOMBED": "Stored in Tomb",
+  "entombed.config.dropBehavior.VOIDED": "Voided",
+  "entombed.config.dropBehavior.PARTIAL": "Partially Stored in Tomb",
+  "entombed.config.dropBehavior.PERCENT_KEPT": "Percent Kept",
+  "entombed.config.dropBehavior.DURABILITY_PERCENT": "Percent of Durability Lost",
+  "entombed.config.dropBehavior.DEFAULT": "Use Items On Death Setting",
+
   "config.jade.plugin_entombed.tomb_owner": "Tomb Owner",
   "config.jade.plugin_entombed.tomb_unclaimed": "Unknown Owner"
 }

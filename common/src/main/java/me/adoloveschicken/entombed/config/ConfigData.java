@@ -1,5 +1,8 @@
 package me.adoloveschicken.entombed.config;
 
+import dev.isxander.yacl3.api.NameableEnum;
+import net.minecraft.network.chat.Component;
+
 public class ConfigData {
     public ConfigData() {
     }
@@ -19,7 +22,9 @@ public class ConfigData {
     public static DropBehavior experienceOnDeath = DropBehavior.PARTIAL;
 
     public static short itemPercentKept = 100;
-    public static short durabilityPercent = 100;
+    public static short mainInvPercentKept = 100;
+    public static short hotbarPercentKept = 100;
+    public static short armorPercentKept = 100;
     public static short experiencePercentKept = 100;
 
     /*-- Sable, Simulated, Aeronautics --*/
@@ -29,7 +34,7 @@ public class ConfigData {
 
     /*-- Other Integrations --*/
 
-    public enum DropBehavior {
+    public enum DropBehavior implements NameableEnum {
         KEPT { // KeepInventory behavior
             @Override
             public boolean shouldStore() {
@@ -52,17 +57,9 @@ public class ConfigData {
             @Override
             public boolean isPartial() { return true; }
         },
-        DURABILITY_PERCENT { // A percent of durability kept
-            @Override
-            public boolean shouldStore() { return true; }
-            @Override
-            public short getDurabilityPercent() { return ConfigData.durabilityPercent; }
-        },
         PERCENT_KEPT { // A percent of items, exp kept
             @Override
             public boolean shouldStore() { return true; }
-            @Override
-            public short getPercent(boolean isExperience) { return isExperience ? ConfigData.experiencePercentKept : ConfigData.itemPercentKept; }
         },
         VOIDED { // Items are lost, voided
             @Override
@@ -76,15 +73,42 @@ public class ConfigData {
             @Override
             public boolean isPartial() { return ConfigData.itemsOnDeath.isPartial(); }
             @Override
-            public short getDurabilityPercent() { return ConfigData.itemsOnDeath.getDurabilityPercent(); }
-            @Override
-            public short getPercent(boolean isExperience) { return ConfigData.itemsOnDeath.getPercent(isExperience); }
+            public short getPercent(PercentSource source) {
+                return ConfigData.itemsOnDeath.getPercent(
+                        source == PercentSource.EXPERIENCE ? PercentSource.EXPERIENCE : PercentSource.ITEMS
+                );
+            }
         };
+
+        @Override
+        public Component getDisplayName() {
+            return Component.translatable("entombed.config.dropBehavior." + name());
+        }
 
         public boolean shouldStore() { return false; }
         public boolean shouldKeep() { return false; }
         public boolean isPartial() { return false; }
-        public short getPercent(boolean isExperience) { return 100; }
-        public short getDurabilityPercent() { return 100; }
+        public short getPercent(PercentSource source) {
+            return switch (source) {
+                case ITEMS -> ConfigData.itemPercentKept;
+                case MAIN_INV -> ConfigData.mainInvPercentKept;
+                case HOTBAR -> ConfigData.hotbarPercentKept;
+                case ARMOR -> ConfigData.armorPercentKept;
+                case EXPERIENCE -> ConfigData.experiencePercentKept;
+            };
+        }
     }
+
+    public static void setItemsOnDeath(DropBehavior value) {
+        ConfigData.itemsOnDeath = (value == DropBehavior.DEFAULT) ? DropBehavior.TOMBED : value;
+    }
+
+    public enum PercentSource { ITEMS, MAIN_INV, HOTBAR, ARMOR, EXPERIENCE }
+
+    public static boolean isPercentKept(DropBehavior behavior) {
+        if (behavior == DropBehavior.PERCENT_KEPT) return true;
+        if (behavior == DropBehavior.DEFAULT) return itemsOnDeath == DropBehavior.PERCENT_KEPT;
+        return false;
+    }
+
 }

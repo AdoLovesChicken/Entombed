@@ -39,6 +39,7 @@ dependencies {
     neoForge "net.neoforged:neoforge:${project.neo_version}"
 
     modCompileOnly "curse.maven:backpacked-352835:7866688"
+    implementation "dev.isxander:yet-another-config-lib:${project.yacl_version_neoforge}"
     modCompileOnly "maven.modrinth:inventorio:${project.inventorio_neo_version}"
     modImplementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
     modImplementation("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
@@ -50,7 +51,6 @@ dependencies {
     modImplementation "maven.modrinth:create-aeronautics:${project.simulated_version}+mc${project.minecraft_version}"
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
     runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
-    // modImplementation("io.wispforest:accessories-neoforge:${project.accessories_version}")
     modCompileOnly("io.wispforest:accessories-neoforge:${project.accessories_version}")
     modImplementation "maven.modrinth:jade:${project.jade_version}"
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
@@ -68,7 +68,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
-            mod_description        : mod_description
+            mod_description        : mod_description,
+            yacl_version_neoforge  : yacl_version_neoforge
     ]
     inputs.properties replaceProperties
     expand replaceProperties

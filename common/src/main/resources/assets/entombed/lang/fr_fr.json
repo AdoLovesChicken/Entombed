@@ -4,6 +4,40 @@
   "entombed.tomb_unclaimed": "Non réclamée",
   "entombed.stolen_tomb": "Vous avez volé la tombe d'un autre joueur",
   "entombed.owner_mismatch": "Ce n'est pas votre tombe",
+
+  "entombed.gui.config": "Configuration Entombed",
+  "entombed.gui.category.vanilla": "Général",
+  "entombed.gui.category.integrations": "Intégrations",
+  "entombed.gui.group.drop_behaviors": "Comportements de chute",
+  "entombed.gui.group.percents": "Pourcentages",
+
+  "entombed.config.tombsHaveCollision": "Les tombes ont une collision",
+  "entombed.config.requireOpForRetrieve": "OP requis pour récupérer",
+  "entombed.config.tombsCanBeBrokenDirectly": "Les tombes peuvent être détruites par les joueurs",
+  "entombed.config.tombsCanBeBrokenIndirectly": "Les tombes peuvent être détruites indirectement",
+
+  "entombed.config.itemsOnDeath": "Comportement des objets à la mort",
+  "entombed.config.mainInvOnDeath": "Comportement de l'inventaire principal à la mort",
+  "entombed.config.hotbarOnDeath": "Comportement de la barre d'accès rapide à la mort",
+  "entombed.config.armorOnDeath": "Comportement de l'armure à la mort",
+  "entombed.config.experienceOnDeath": "Comportement de l'expérience à la mort",
+
+  "entombed.config.itemPercentKept": "Pourcentage d'objets conservés",
+  "entombed.config.durabilityPercent": "Pourcentage de durabilité conservée",
+  "entombed.config.experiencePercentKept": "Pourcentage d'expérience conservée",
+
+  "entombed.config.tombsCanBecomeSublevel": "Les tombes peuvent devenir des sous-niveaux",
+  "entombed.config.tombsFloatInLiquid": "Les tombes flottent dans les liquides",
+  "entombed.config.allTombsAreSublevel": "Toutes les tombes sont des sous-niveaux",
+
+  "entombed.config.dropBehavior.KEPT": "Conservé dans l'inventaire",
+  "entombed.config.dropBehavior.TOMBED": "Stocké dans la tombe",
+  "entombed.config.dropBehavior.VOIDED": "Perdu",
+  "entombed.config.dropBehavior.PARTIAL": "Partiellement stocké dans la tombe",
+  "entombed.config.dropBehavior.PERCENT_KEPT": "Pourcentage conservé",
+  "entombed.config.dropBehavior.DURABILITY_PERCENT": "Pourcentage de durabilité perdue",
+  "entombed.config.dropBehavior.DEFAULT": "Utiliser le paramètre des objets à la mort",
+
   "config.jade.plugin_entombed.tomb_owner": "Propriétaire de la tombe",
   "config.jade.plugin_entombed.tomb_unclaimed": "Propriétaire inconnu"
 }

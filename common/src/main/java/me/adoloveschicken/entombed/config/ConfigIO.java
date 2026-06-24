@@ -63,6 +63,7 @@ public class ConfigIO {
                     Entombed.LOGGER.error("Could not set field {} of {}", field.getName(), ConfigData.class.getName(), e);
                 }
             }
+            ConfigData.setItemsOnDeath(ConfigData.itemsOnDeath);
         } catch (IOException e) {
             Entombed.LOGGER.error("Could not load config file {}", file, e);
         }
