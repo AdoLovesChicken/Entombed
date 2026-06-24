@@ -21,25 +21,32 @@ public class NeoDeathHandler {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            try {
-                BlockPos gravePos = DeathHandler.onPlayerDeath(player, SABLE_LOADED);
-                player.skipDropExperience();
+            BlockPos gravePos = DeathHandler.onPlayerDeath(player, SABLE_LOADED);
+            player.skipDropExperience();
+            assembleTombInEndSea(player, gravePos);
+        }
+    }
 
-                if (AERONAUTICS_LOADED && gravePos != null && EndSeaHandler.hasEndSea(player.serverLevel())) {
-                    ServerLevel level = player.serverLevel();
-                    BlockPos adjustedPos = gravePos;
-                    while (adjustedPos.getY() > 1 &&
-                            (level.getBlockState(adjustedPos.below()).canBeReplaced() ||
-                                    !level.getBlockState(adjustedPos.below()).getFluidState().isEmpty())) {
-                        adjustedPos = adjustedPos.below();
-                    }
-                    if (adjustedPos.getY() <= 1) {
-                        SableAssemblyHelper.assembleBlocks(level, adjustedPos);
-                    }
+    private static void assembleTombInEndSea(ServerPlayer player, BlockPos gravePos) {
+        try {
+            if (AERONAUTICS_LOADED && gravePos != null && EndSeaHandler.hasEndSea(player.serverLevel())) {
+                ServerLevel level = player.serverLevel();
+                BlockPos adjustedPos = gravePos;
+
+                // Decide if end sea start y or if world limit is higher
+                int suitableY = Math.max(level.getMinBuildHeight(), (int) Math.ceil(EndSeaHandler.getStartY(level)));
+
+                while (adjustedPos.getY() > suitableY &&
+                        (level.getBlockState(adjustedPos.below()).canBeReplaced() ||
+                                !level.getBlockState(adjustedPos.below()).getFluidState().isEmpty())) {
+                    adjustedPos = adjustedPos.below();
                 }
-            } catch (Exception e) {
-                Entombed.LOGGER.error("Error in death handler", e);
+                if (adjustedPos.getY() <= suitableY) {
+                    SableAssemblyHelper.assembleBlocks(level, adjustedPos);
+                }
             }
+        } catch (Exception e) {
+            Entombed.LOGGER.error("Error in death handler", e);
         }
     }
 
