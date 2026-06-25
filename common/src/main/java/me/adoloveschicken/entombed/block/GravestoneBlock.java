@@ -28,6 +28,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -120,7 +123,7 @@ public class GravestoneBlock extends BaseEntityBlock {
     // Corrects block hitbox
     @Override
     protected boolean isCollisionShapeFullBlock(BlockState state, BlockGetter level, BlockPos pos) {
-        return false;
+        return true;
     }
 
     @Override
@@ -163,4 +166,11 @@ public class GravestoneBlock extends BaseEntityBlock {
     public boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
         return false;
     }
+
+    @Override
+    protected boolean canBeReplaced(BlockState state, Fluid fluid) {
+        return false;
+    }
+
+
 }

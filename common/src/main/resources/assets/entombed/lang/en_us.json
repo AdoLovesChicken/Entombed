@@ -16,6 +16,8 @@
   "entombed.config.tombsCanBeBrokenDirectly": "Tombs can be Broken by Players",
   "entombed.config.tombsCanBeBrokenIndirectly": "Tombs can be Broken Indirectly",
 
+  "entombed.config.tombsCanPlaceInLiquid": "Tombs can be Placed in Liquid",
+
   "entombed.config.itemsOnDeath": "Items On Death Behavior",
   "entombed.config.mainInvOnDeath": "Main Inventory On Death Behavior",
   "entombed.config.hotbarOnDeath": "Hotbar On Death Behavior",

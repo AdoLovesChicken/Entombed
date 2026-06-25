@@ -17,6 +17,7 @@ public class ModBlocks {
                     .noOcclusion()
                     .destroyTime(0.5f)
                     .sound(SoundType.STONE)
+                    .forceSolidOn()
             ));
 
     public static void register(IEventBus eventBus) {

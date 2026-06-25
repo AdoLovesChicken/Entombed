@@ -132,8 +132,8 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
         }
         return switch (experienceDropBehavior) {
             case TOMBED -> player.totalExperience;
-            case PARTIAL -> player.getExperienceReward((ServerLevel) player.level(), null);
-            case PERCENT_KEPT -> Math.round(player.totalExperience * ConfigData.experiencePercentKept / 10.0f);
+            case PARTIAL -> player.getXpNeededForNextLevel();
+            case PERCENT_KEPT -> Math.round(player.totalExperience * ConfigData.experiencePercentKept / 100.0f);
             default -> 0;
         };
     }

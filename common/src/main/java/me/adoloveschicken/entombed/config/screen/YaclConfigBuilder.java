@@ -26,6 +26,8 @@ public class YaclConfigBuilder {
                                 () -> ConfigData.tombsCanBeBrokenDirectly, val -> ConfigData.tombsCanBeBrokenDirectly = val))
                         .option(boolOption("entombed.config.tombsCanBeBrokenIndirectly",
                                 () -> ConfigData.tombsCanBeBrokenIndirectly, val -> ConfigData.tombsCanBeBrokenIndirectly = val))
+                        .option(boolOption("entombed.config.tombsCanPlaceInLiquid",
+                                () -> ConfigData.tombsCanPlaceInLiquid, val -> ConfigData.tombsCanPlaceInLiquid = val))
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("entombed.gui.group.drop_behaviors"))
                                 .option(dropBehaviorOption("entombed.config.itemsOnDeath",
