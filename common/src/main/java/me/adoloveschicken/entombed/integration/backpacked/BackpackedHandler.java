@@ -1,11 +1,13 @@
 package me.adoloveschicken.entombed.integration.backpacked;
 
 import com.mrcrayfish.backpacked.BackpackHelper;
+import io.wispforest.accessories.api.AccessoriesContainer;
 import me.adoloveschicken.entombed.api.TombIntegration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import static com.mrcrayfish.backpacked.BackpackHelper.setBackpackStack;
 
 public class BackpackedHandler implements TombIntegration {
 
@@ -21,6 +23,7 @@ public class BackpackedHandler implements TombIntegration {
                 backpackTag.putInt("Index", i);
                 backpackTag.put("Stack", stack.save(player.registryAccess()));
                 backpackList.add(backpackTag);
+                setBackpackStack(player, ItemStack.EMPTY, i);
             }
         }
 
@@ -38,7 +41,9 @@ public class BackpackedHandler implements TombIntegration {
                 int index = backpackTag.getInt("Index");
                 ItemStack stack = ItemStack.parse(player.registryAccess(), backpackTag.getCompound("Stack")).orElse(ItemStack.EMPTY);
                 if (!stack.isEmpty()) {
-                    BackpackHelper.setBackpackStack(player, stack, index);
+                    if (!setBackpackStack(player, stack, index)) {
+                        if (!player.getInventory().add(stack)) player.drop(stack, false);
+                    }
                 }
             }
         }

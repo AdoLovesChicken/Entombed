@@ -50,6 +50,7 @@ public class InventorioHandler implements TombIntegration {
                 entry.putInt("SlotIndex", i);
                 entry.put("Item", stack.save(player.level().registryAccess()));
                 nbtList.add(entry);
+                list.set(i, ItemStack.EMPTY);
             }
         }
         tag.put(key, nbtList);
@@ -63,9 +64,14 @@ public class InventorioHandler implements TombIntegration {
             int slotIndex = entry.getInt("SlotIndex");
             ItemStack stack = ItemStack.parseOptional(player.level().registryAccess(),
                     entry.getCompound("Item"));
-            if (slotIndex < list.size()) {
-                list.set(slotIndex, stack);
+
+            if (slotIndex >= list.size()) {
+                if (!player.getInventory().add(stack)) player.drop(stack, false);
+                continue;
             }
+
+            if (list.get(slotIndex).isEmpty()) list.set(slotIndex, stack);
+            else if (!player.getInventory().add(stack)) player.drop(stack, false);
         }
     }
 

@@ -1,6 +1,7 @@
 package me.adoloveschicken.entombed.integration.trinkets;
 
 import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
 import me.adoloveschicken.entombed.api.TombIntegration;
 import net.minecraft.nbt.CompoundTag;
@@ -47,9 +48,10 @@ public class TrinketsHandler implements TombIntegration {
             int slotIndex = itemEntry.getInt("SlotIndex");
             ItemStack item = ItemStack.parseOptional(player.level().registryAccess(), itemEntry.getCompound("Item"));
 
-            Map<String, Map<String, dev.emi.trinkets.api.TrinketInventory>> inventory = component.get().getInventory();
+            Map<String, Map<String, TrinketInventory>> inventory = component.get().getInventory();
             if (inventory.containsKey(group) && inventory.get(group).containsKey(slotType)) {
-                inventory.get(group).get(slotType).setItem(slotIndex, item);
+                if (inventory.get(group).get(slotType).getItem(slotIndex).isEmpty()) inventory.get(group).get(slotType).setItem(slotIndex, item);
+                else if (!player.getInventory().add(item)) player.drop(item, false);
             }
         }
     }

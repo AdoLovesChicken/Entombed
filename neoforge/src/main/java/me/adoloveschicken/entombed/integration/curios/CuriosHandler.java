@@ -60,7 +60,8 @@ public class CuriosHandler implements TombIntegration {
 
                     ICurioStacksHandler stacksHandler = handler.getCurios().get(slotType);
                     if (stacksHandler != null) {
-                        stacksHandler.getStacks().setStackInSlot(slotIndex, item);
+                        if (stacksHandler.getStacks().getStackInSlot(slotIndex).isEmpty()) stacksHandler.getStacks().setStackInSlot(slotIndex, item);
+                        else if (!player.getInventory().add(item)) player.drop(item, false);
                     }
                 }
             }
