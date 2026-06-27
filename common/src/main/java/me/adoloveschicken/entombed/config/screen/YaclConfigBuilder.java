@@ -31,46 +31,46 @@ public class YaclConfigBuilder {
                                     ConfigData.tombsCanPlaceInLiquid = val;
                                     if (val) ConfigData.tombsFloatInLiquid = true;
                                 }))
-                        .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("entombed.gui.group.drop_behaviors"))
-                                .option(dropBehaviorOption("entombed.config.itemsOnDeath",
-                                        () -> ConfigData.itemsOnDeath, ConfigData::setItemsOnDeath, DropBehavior.TOMBED))
-                                .option(dropBehaviorOption("entombed.config.mainInvOnDeath",
-                                        () -> ConfigData.mainInvOnDeath, val -> ConfigData.mainInvOnDeath = val, DropBehavior.DEFAULT))
-                                .option(dropBehaviorOption("entombed.config.hotbarOnDeath",
-                                        () -> ConfigData.hotbarOnDeath, val -> ConfigData.hotbarOnDeath = val, DropBehavior.DEFAULT))
-                                .option(dropBehaviorOption("entombed.config.armorOnDeath",
-                                        () -> ConfigData.armorOnDeath, val -> ConfigData.armorOnDeath = val, DropBehavior.DEFAULT))
-                                .option(dropBehaviorOption("entombed.config.experienceOnDeath",
-                                        () -> ConfigData.experienceOnDeath, val -> ConfigData.experienceOnDeath = val, DropBehavior.PARTIAL))
-                                .build())
-                        .group(OptionGroup.createBuilder()
-                                .name(Component.translatable("entombed.gui.group.percents"))
-                                .option(percentOption("entombed.config.itemPercentKept",
-                                        () -> ConfigData.itemPercentKept, val -> ConfigData.itemPercentKept = val,
-                                        () -> ConfigData.isPercentKept(ConfigData.itemsOnDeath)))
-                                .option(percentOption("entombed.config.mainInvPercentKept",
-                                        () -> ConfigData.mainInvPercentKept, val -> ConfigData.mainInvPercentKept = val,
-                                        () -> ConfigData.isPercentKept(ConfigData.mainInvOnDeath)))
-                                .option(percentOption("entombed.config.hotbarPercentKept",
-                                        () -> ConfigData.hotbarPercentKept, val -> ConfigData.hotbarPercentKept = val,
-                                        () -> ConfigData.isPercentKept(ConfigData.hotbarOnDeath)))
-                                .option(percentOption("entombed.config.armorPercentKept",
-                                        () -> ConfigData.armorPercentKept, val -> ConfigData.armorPercentKept = val,
-                                        () -> ConfigData.isPercentKept(ConfigData.armorOnDeath)))
-                                .option(percentOption("entombed.config.experiencePercentKept",
-                                        () -> ConfigData.experiencePercentKept, val -> ConfigData.experiencePercentKept = val,
-                                        () -> ConfigData.isPercentKept(ConfigData.experienceOnDeath)))
-                                .build())
+//                        .group(OptionGroup.createBuilder()
+//                                .name(Component.translatable("entombed.gui.group.drop_behaviors"))
+//                                .option(dropBehaviorOption("entombed.config.itemsOnDeath",
+//                                        () -> ConfigData.itemsOnDeath, ConfigData::setItemsOnDeath, DropBehavior.TOMBED))
+//                                .option(dropBehaviorOption("entombed.config.mainInvOnDeath",
+//                                        () -> ConfigData.mainInvOnDeath, val -> ConfigData.mainInvOnDeath = val, DropBehavior.DEFAULT))
+//                                .option(dropBehaviorOption("entombed.config.hotbarOnDeath",
+//                                        () -> ConfigData.hotbarOnDeath, val -> ConfigData.hotbarOnDeath = val, DropBehavior.DEFAULT))
+//                                .option(dropBehaviorOption("entombed.config.armorOnDeath",
+//                                        () -> ConfigData.armorOnDeath, val -> ConfigData.armorOnDeath = val, DropBehavior.DEFAULT))
+//                                .option(dropBehaviorOption("entombed.config.experienceOnDeath",
+//                                        () -> ConfigData.experienceOnDeath, val -> ConfigData.experienceOnDeath = val, DropBehavior.PARTIAL))
+//                                .build())
+//                        .group(OptionGroup.createBuilder()
+//                                .name(Component.translatable("entombed.gui.group.percents"))
+//                                .option(percentOption("entombed.config.itemPercentKept",
+//                                        () -> ConfigData.itemPercentKept, val -> ConfigData.itemPercentKept = val,
+//                                        () -> ConfigData.isPercentKept(ConfigData.itemsOnDeath)))
+//                                .option(percentOption("entombed.config.mainInvPercentKept",
+//                                        () -> ConfigData.mainInvPercentKept, val -> ConfigData.mainInvPercentKept = val,
+//                                        () -> ConfigData.isPercentKept(ConfigData.mainInvOnDeath)))
+//                                .option(percentOption("entombed.config.hotbarPercentKept",
+//                                        () -> ConfigData.hotbarPercentKept, val -> ConfigData.hotbarPercentKept = val,
+//                                        () -> ConfigData.isPercentKept(ConfigData.hotbarOnDeath)))
+//                                .option(percentOption("entombed.config.armorPercentKept",
+//                                        () -> ConfigData.armorPercentKept, val -> ConfigData.armorPercentKept = val,
+//                                        () -> ConfigData.isPercentKept(ConfigData.armorOnDeath)))
+//                                .option(percentOption("entombed.config.experiencePercentKept",
+//                                        () -> ConfigData.experiencePercentKept, val -> ConfigData.experiencePercentKept = val,
+//                                        () -> ConfigData.isPercentKept(ConfigData.experienceOnDeath)))
+//                                .build())
                         .build())
                 .category(ConfigCategory.createBuilder()
                         .name(Component.translatable("entombed.gui.category.integrations"))
-                        .option(boolOption("entombed.config.tombsCanBecomeSublevel",
-                                () -> ConfigData.tombsCanBecomeSublevel, val -> ConfigData.tombsCanBecomeSublevel = val))
+//                        .option(boolOption("entombed.config.tombsCanBecomeSublevel",
+//                                () -> ConfigData.tombsCanBecomeSublevel, val -> ConfigData.tombsCanBecomeSublevel = val))
                         .option(boolOption("entombed.config.tombsFloatInLiquid",
                                 () -> ConfigData.tombsFloatInLiquid, val -> ConfigData.tombsFloatInLiquid = val))
-                        .option(boolOption("entombed.config.allTombsAreSublevel",
-                                () -> ConfigData.allTombsAreSublevel, val -> ConfigData.allTombsAreSublevel = val))
+//                        .option(boolOption("entombed.config.allTombsAreSublevel",
+//                                () -> ConfigData.allTombsAreSublevel, val -> ConfigData.allTombsAreSublevel = val))
                         .build())
                 .build();
         return config.generateScreen(parent);

@@ -19,22 +19,22 @@ public class ConfigData {
     public static boolean tombsCanPlaceInLiquid = false;
 
     // Keep items, xp:
-    public static DropBehavior itemsOnDeath = DropBehavior.TOMBED;
-    public static DropBehavior mainInvOnDeath = DropBehavior.DEFAULT;
-    public static DropBehavior hotbarOnDeath = DropBehavior.DEFAULT;
-    public static DropBehavior armorOnDeath = DropBehavior.DEFAULT;
-    public static DropBehavior experienceOnDeath = DropBehavior.PARTIAL;
+    public static DropBehavior itemsOnDeath = DropBehavior.TOMBED; // * For update after 2.2.0
+    public static DropBehavior mainInvOnDeath = DropBehavior.DEFAULT; // *
+    public static DropBehavior hotbarOnDeath = DropBehavior.DEFAULT; // *
+    public static DropBehavior armorOnDeath = DropBehavior.DEFAULT; // *
+    public static DropBehavior experienceOnDeath = DropBehavior.PARTIAL; // *
 
-    public static short itemPercentKept = 100;
-    public static short mainInvPercentKept = 100;
-    public static short hotbarPercentKept = 100;
-    public static short armorPercentKept = 100;
-    public static short experiencePercentKept = 100;
+    public static short itemPercentKept = 100; // *
+    public static short mainInvPercentKept = 100; // *
+    public static short hotbarPercentKept = 100; // *
+    public static short armorPercentKept = 100; // *
+    public static short experiencePercentKept = 100; // *
 
     /*-- Sable, Simulated, Aeronautics --*/
-    public static boolean tombsCanBecomeSublevel = true;
+//    public static boolean tombsCanBecomeSublevel = true;
     public static boolean tombsFloatInLiquid = false; // overrides tombsCanPlaceInLiquid to false
-    public static boolean allTombsAreSublevel = false;
+//    public static boolean allTombsAreSublevel = false;
 
     /*-- Other Integrations --*/
 
