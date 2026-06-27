@@ -64,6 +64,7 @@ public class ConfigIO {
                 }
             }
             ConfigData.setItemsOnDeath(ConfigData.itemsOnDeath);
+            ConfigData.setLiquidProperties(ConfigData.tombsFloatInLiquid);
         } catch (IOException e) {
             Entombed.LOGGER.error("Could not load config file {}", file, e);
         }

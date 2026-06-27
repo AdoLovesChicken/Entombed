@@ -7,6 +7,7 @@ public class ConfigData {
     public ConfigData() {
     }
 
+    public static boolean usedYACL = true;
     /*-- Vanilla --*/
     // Tomb settings
     public static boolean tombsHaveCollision = true;
@@ -32,7 +33,7 @@ public class ConfigData {
 
     /*-- Sable, Simulated, Aeronautics --*/
     public static boolean tombsCanBecomeSublevel = true;
-    public static boolean tombsFloatInLiquid = true; // overrides tombsCanPlaceInLiquid
+    public static boolean tombsFloatInLiquid = false; // overrides tombsCanPlaceInLiquid to false
     public static boolean allTombsAreSublevel = false;
 
     /*-- Other Integrations --*/
@@ -104,6 +105,10 @@ public class ConfigData {
 
     public static void setItemsOnDeath(DropBehavior value) {
         ConfigData.itemsOnDeath = (value == DropBehavior.DEFAULT) ? DropBehavior.TOMBED : value;
+    }
+
+    public static void setLiquidProperties(boolean floatInLiquid) {
+        if (floatInLiquid) ConfigData.tombsCanPlaceInLiquid = true;
     }
 
     public enum PercentSource { ITEMS, MAIN_INV, HOTBAR, ARMOR, EXPERIENCE }

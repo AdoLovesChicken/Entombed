@@ -5,6 +5,7 @@ import me.adoloveschicken.entombed.block.CommonModBlocks;
 import me.adoloveschicken.entombed.block.GravestoneBlock;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.config.ConfigData;
+import me.adoloveschicken.entombed.integration.sable.SableAssemblyHelper;
 import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
 import me.adoloveschicken.entombed.storage.GraveEntry;
 import me.adoloveschicken.entombed.storage.GraveIndex;
@@ -41,6 +42,8 @@ public class DeathHandler {
                 ? SableGravePositionHandler.getLocalFacing(player)
                 : player.getDirection().getOpposite();
 
+        boolean liquidCheck = !level.getBlockState(pos).getFluidState().isEmpty();
+
         level.setBlock(pos, CommonModBlocks.TOMB.defaultBlockState().setValue(GravestoneBlock.FACING, deathFacing), 3);
         if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestoneBlockEntity) {
             gravestoneBlockEntity.storeAll(player);
@@ -56,6 +59,10 @@ public class DeathHandler {
             level.playSound(null, pos, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.5f, 0.8f);
             level.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.3, 0.3, 0.3, 0.05);
         }
+
+        if (sableLoaded && ConfigData.tombsFloatInLiquid && liquidCheck)
+            SableAssemblyHelper.assembleBlocks(level, pos);
+
         return pos;
     }
 
@@ -109,12 +116,14 @@ public class DeathHandler {
 
     private static boolean isReplaceable(BlockState state) {
         return state.canBeReplaced() &&
-                (state.getFluidState().isEmpty() || ConfigData.tombsCanPlaceInLiquid);
+                (state.getFluidState().isEmpty() || ConfigData.tombsCanPlaceInLiquid || ConfigData.tombsFloatInLiquid);
     }
 
     private static boolean isAirAboveSolid(BlockPos pos, ServerLevel level) {
         BlockState state = level.getBlockState(pos);
-        if (!state.getFluidState().isEmpty() && state.canBeReplaced() && ConfigData.tombsCanPlaceInLiquid) return true;
+        if (!state.getFluidState().isEmpty() && state.canBeReplaced()
+                && (ConfigData.tombsCanPlaceInLiquid || ConfigData.tombsFloatInLiquid))
+            return true;
         return isReplaceable(state) && !isReplaceable(level.getBlockState(pos.below()));
     }
 
