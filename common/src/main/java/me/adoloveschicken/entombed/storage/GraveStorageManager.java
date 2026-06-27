@@ -69,14 +69,16 @@ public class GraveStorageManager {
         }
     }
 
-    public static void deleteGrave(UUID graveID) {
+    public static void markRetrieved(UUID graveID) {
         if (graveDir == null) return;
 
         Path graveFile = graveDir.resolve(graveID.toString() + ".dat");
+        Path retrievedFile = graveDir.resolve(graveID.toString() + ".dat.retrieved");
+
         try {
-            Files.deleteIfExists(graveFile);
+            Files.move(graveFile, retrievedFile, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Entombed.LOGGER.error("Failed to mark grave as retrieved: {}", graveID, e);
         }
     }
 

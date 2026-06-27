@@ -209,7 +209,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     }
 
     public void removeGraveBlock(Player player, boolean useEffects) {
-        GraveStorageManager.deleteGrave(graveID);
+        GraveStorageManager.markRetrieved(graveID);
         GraveIndex.removeGrave(player.getUUID(), graveID);
         if (level != null) {
             if (useEffects) playEffects();
@@ -269,6 +269,6 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
 
     @Override
     public void clearContent() {
-        GraveStorageManager.deleteGrave(graveID);
+        GraveStorageManager.markRetrieved(graveID);
     }
 }
