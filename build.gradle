@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'architectury-plugin' version '3.4-SNAPSHOT'
     id 'dev.architectury.loom' version '1.13-SNAPSHOT' apply false
+    id "me.modmuss50.mod-publish-plugin" version "2.1.1"
 }
 
 architectury {
@@ -98,5 +99,64 @@ subprojects {
 
     java {
         withSourcesJar()
+    }
+}
+
+publishMods {
+    changelog = rootProject.file("CHANGELOG.md").text
+    type = STABLE
+    displayName = "Entombed ${project.version}"
+
+    modrinth("modrinthFabric") {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "b3lWYZUQ"
+        minecraftVersions.add("1.21.1")
+        file = project(":fabric").jar.archiveFile
+        modLoaders.add("fabric")
+        requires("fabric-api", "yacl") // fabric-api, yacl
+    }
+
+    modrinth("modrinthNeoForge") {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "b3lWYZUQ"
+        minecraftVersions.add("1.21.1")
+        file = project(":neoforge").jar.archiveFile
+        modLoaders.add("neoforge")
+        requires("yacl")
+    }
+
+    curseforge("curseforgeFabric") {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = "1559359"
+        minecraftVersions.add("1.21.1")
+        client = true
+        server = true
+        file = project(":fabric").jar.archiveFile
+        modLoaders.add("fabric")
+        requires("306612", "667299") // fabric-api, yacl
+    }
+
+    curseforge("curseforgeNeoForge") {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = "1559359"
+        minecraftVersions.add("1.21.1")
+        client = true
+        server = true
+        file = project(":neoforge").jar.archiveFile
+        modLoaders.add("neoforge")
+        requires("667299") // yacl
+    }
+
+    github {
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = "AdoLovesChicken/Entombed"
+        commitish = "main"
+        tagName = "v${project.version}"
+        file = project(":fabric").jar.archiveFile
+        additionalFiles.from(
+                project(":neoforge").jar.archiveFile,
+                project(":fabric").sourcesJar.archiveFile,
+                project(":neoforge").sourcesJar.archiveFile
+        )
     }
 }
