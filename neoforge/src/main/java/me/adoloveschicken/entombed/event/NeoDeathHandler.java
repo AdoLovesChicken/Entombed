@@ -19,7 +19,7 @@ public class NeoDeathHandler {
     private static final boolean SABLE_LOADED = ModList.get().isLoaded("sable");
     private static final boolean AERONAUTICS_LOADED = ModList.get().isLoaded("aeronautics");
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent(priority = EventPriority.LOW)
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             BlockPos gravePos = DeathHandler.onPlayerDeath(player, SABLE_LOADED);
