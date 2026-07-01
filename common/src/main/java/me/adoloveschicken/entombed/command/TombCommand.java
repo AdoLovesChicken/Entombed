@@ -1,10 +1,10 @@
 package me.adoloveschicken.entombed.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.api.TombIntegration;
 import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
-import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.storage.GraveEntry;
 import me.adoloveschicken.entombed.storage.GraveIndex;
 import me.adoloveschicken.entombed.storage.GraveStorageManager;
@@ -23,6 +23,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.UUID;
 
 public class TombCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -67,14 +69,50 @@ public class TombCommand {
             if (graveLevel != null) {
                 BlockPos gravePos = new BlockPos(entry.getX(), entry.getY(), entry.getZ());
                 if (graveLevel.getBlockEntity(gravePos) instanceof GravestoneBlockEntity grave) {
-                    grave.restoreAll(recipient);
+                    grave.setChanged();
+                    grave.removeGraveBlock(recipient, true);
                 }
             }
-
+            restoreAll(recipient, entry);
             recipient.sendSystemMessage(Component.literal("Grave retrieved successfully!"));
 
         } else {
             recipient.sendSystemMessage(Component.literal("No graves found for " + target.getName().getString()));
         }
     }
+    
+    public static void restoreAll(Player player, GraveEntry entry) {
+        UUID        graveID         = entry.getGraveID();
+        CompoundTag loadedGraveData = GraveStorageManager.loadGrave(graveID);
+        
+        if (loadedGraveData == null) {
+            Entombed.LOGGER.error("Could not load grave data for id {}, items lost!", graveID);
+            return;
+        }
+        
+        restoreItems(player, loadedGraveData);
+        GravestoneBlockEntity.restoreExperience(player, loadedGraveData);
+        
+        CompoundTag integrationsTag = loadedGraveData.getCompound("ModExtras");
+        for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
+            integration.retrieveData(player, integrationsTag);
+        }
+        
+    }
+    
+    public static void restoreItems(Player player, CompoundTag graveData) {
+        final NonNullList<ItemStack> itemStacks = NonNullList.withSize(GravestoneBlockEntity.INVENTORY_SIZE, ItemStack.EMPTY);
+        RegistryAccess registryAccess = player.level().registryAccess();
+        
+        ContainerHelper.loadAllItems(graveData, itemStacks, registryAccess);
+        
+        for (int i = 0; i < itemStacks.size(); i++) {
+            ItemStack itemStack = itemStacks.get(i);
+            if (!itemStack.isEmpty()) {
+                GravestoneBlockEntity.restoreItem(player, i, itemStack.copy());
+            }
+        }
+        itemStacks.clear();
+    }
+    
 }
