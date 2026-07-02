@@ -150,8 +150,8 @@ publishMods {
     github {
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
         repository = "AdoLovesChicken/Entombed"
-        commitish = "main"
-        tagName = "v${project.version}"
+        commitish = "dev"
+        tagName = "${project.version}"
         file = project(":fabric").jar.archiveFile
         additionalFiles.from(
                 project(":neoforge").jar.archiveFile,

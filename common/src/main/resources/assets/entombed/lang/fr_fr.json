@@ -16,6 +16,8 @@
   "entombed.config.tombsCanBeBrokenDirectly": "Les tombes peuvent être détruites par les joueurs",
   "entombed.config.tombsCanBeBrokenIndirectly": "Les tombes peuvent être détruites indirectement",
 
+  "entombed.config.tombsCanPlaceInLiquid": "Les tombes peuvent être placées dans un liquide",
+
   "entombed.config.itemsOnDeath": "Comportement des objets à la mort",
   "entombed.config.mainInvOnDeath": "Comportement de l'inventaire principal à la mort",
   "entombed.config.hotbarOnDeath": "Comportement de la barre d'accès rapide à la mort",
