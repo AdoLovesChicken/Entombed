@@ -4,6 +4,7 @@ import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
 import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
+import me.adoloveschicken.entombed.config.Config;
 import me.adoloveschicken.entombed.config.ConfigData;
 import me.adoloveschicken.entombed.config.ConfigData.DropBehavior;
 import net.minecraft.client.gui.screens.Screen;
@@ -16,6 +17,7 @@ public class YaclConfigBuilder {
     public static Screen createScreen(Screen parent) {
         YetAnotherConfigLib config = YetAnotherConfigLib.createBuilder()
                 .title(Component.translatable("entombed.gui.config"))
+                .save(Config::save)
                 .category(ConfigCategory.createBuilder()
                         .name(Component.translatable("entombed.gui.category.vanilla"))
                         .option(boolOption("entombed.config.tombsHaveCollision",
