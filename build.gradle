@@ -107,15 +107,6 @@ publishMods {
     type = STABLE
     displayName = "Entombed ${project.version}"
 
-    modrinth("modrinthFabric") {
-        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        projectId = "b3lWYZUQ"
-        minecraftVersions.add("1.21.1")
-        file = project(":fabric").jar.archiveFile
-        modLoaders.add("fabric")
-        requires("fabric-api", "yacl") // fabric-api, yacl
-    }
-
     modrinth("modrinthNeoForge") {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = "b3lWYZUQ"
@@ -123,6 +114,15 @@ publishMods {
         file = project(":neoforge").jar.archiveFile
         modLoaders.add("neoforge")
         requires("yacl")
+    }
+
+    modrinth("modrinthFabric") {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "b3lWYZUQ"
+        minecraftVersions.add("1.21.1")
+        file = project(":fabric").jar.archiveFile
+        modLoaders.add("fabric")
+        requires("fabric-api", "yacl")
     }
 
     curseforge("curseforgeFabric") {
@@ -133,7 +133,7 @@ publishMods {
         server = true
         file = project(":fabric").jar.archiveFile
         modLoaders.add("fabric")
-        requires("306612", "667299") // fabric-api, yacl
+        requires("fabric-api", "yacl")
     }
 
     curseforge("curseforgeNeoForge") {
@@ -144,7 +144,7 @@ publishMods {
         server = true
         file = project(":neoforge").jar.archiveFile
         modLoaders.add("neoforge")
-        requires("667299") // yacl
+        requires("yacl")
     }
 
     github {
