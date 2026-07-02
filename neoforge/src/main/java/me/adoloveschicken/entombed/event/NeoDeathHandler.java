@@ -6,6 +6,7 @@ import me.adoloveschicken.entombed.integration.simulated.EndSeaHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
@@ -18,7 +19,7 @@ public class NeoDeathHandler {
     private static final boolean SABLE_LOADED = ModList.get().isLoaded("sable");
     private static final boolean AERONAUTICS_LOADED = ModList.get().isLoaded("aeronautics");
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             BlockPos gravePos = DeathHandler.onPlayerDeath(player, SABLE_LOADED);
