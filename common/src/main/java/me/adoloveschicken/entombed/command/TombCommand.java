@@ -63,17 +63,24 @@ public class TombCommand {
 
     private static void retrieveItems(Player target, Player recipient, RegistryAccess registryAccess) {
         GraveEntry entry = GraveIndex.getLastGrave(target.getUUID());
+        UUID graveID = entry.getGraveID();
         if (entry != null) {
             ResourceLocation dimensionId = ResourceLocation.parse(entry.getDimension());
             ServerLevel graveLevel = recipient.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
             if (graveLevel != null) {
                 BlockPos gravePos = new BlockPos(entry.getX(), entry.getY(), entry.getZ());
                 if (graveLevel.getBlockEntity(gravePos) instanceof GravestoneBlockEntity grave) {
-                    grave.setChanged();
-                    grave.removeGraveBlock(recipient, true);
+                    grave.restoreAll(recipient);
+                } else {
+                    restoreAll(recipient, entry);
+                    GraveStorageManager.markRetrieved(graveID);
+                    GraveIndex.removeGrave(target.getUUID(), graveID);
                 }
+            } else {
+                restoreAll(recipient, entry);
+                GraveStorageManager.markRetrieved(graveID);
+                GraveIndex.removeGrave(target.getUUID(), graveID);
             }
-            restoreAll(recipient, entry);
             recipient.sendSystemMessage(Component.literal("Grave retrieved successfully!"));
 
         } else {
