@@ -89,7 +89,7 @@ public class TombCommand {
     }
     
     public static void restoreAll(Player player, GraveEntry entry) {
-        UUID        graveID         = entry.getGraveID();
+        UUID graveID = entry.getGraveID();
         CompoundTag loadedGraveData = GraveStorageManager.loadGrave(graveID);
         
         if (loadedGraveData == null) {
