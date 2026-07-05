@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import me.adoloveschicken.entombed.api.TombIntegration;
 import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
-import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.storage.GraveEntry;
 import me.adoloveschicken.entombed.storage.GraveIndex;
 import me.adoloveschicken.entombed.storage.GraveStorageManager;
@@ -62,19 +61,43 @@ public class TombCommand {
     private static void retrieveItems(Player target, Player recipient, RegistryAccess registryAccess) {
         GraveEntry entry = GraveIndex.getLastGrave(target.getUUID());
         if (entry != null) {
+            // Try block entity first
             ResourceLocation dimensionId = ResourceLocation.parse(entry.getDimension());
             ServerLevel graveLevel = recipient.getServer().getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
             if (graveLevel != null) {
                 BlockPos gravePos = new BlockPos(entry.getX(), entry.getY(), entry.getZ());
                 if (graveLevel.getBlockEntity(gravePos) instanceof GravestoneBlockEntity grave) {
                     grave.restoreAll(recipient);
+                    recipient.sendSystemMessage(Component.literal("Tomb retrieved successfully!"));
+                    return;
                 }
             }
 
-            recipient.sendSystemMessage(Component.literal("Grave retrieved successfully!"));
+            // Fallback: restore directly from file
+            CompoundTag graveData = GraveStorageManager.loadGrave(entry.getGraveID());
+            if (graveData != null) {
+                GravestoneBlockEntity.restoreExperience(recipient, graveData);
 
+                NonNullList<ItemStack> itemStacks = NonNullList.withSize(GravestoneBlockEntity.INVENTORY_SIZE, ItemStack.EMPTY);
+                ContainerHelper.loadAllItems(graveData, itemStacks, registryAccess);
+                for (int i = 0; i < itemStacks.size(); i++) {
+                    ItemStack itemStack = itemStacks.get(i);
+                    if (!itemStack.isEmpty()) GravestoneBlockEntity.restoreItem(recipient, i, itemStack.copy());
+                }
+
+                CompoundTag integrationsTag = graveData.getCompound("ModExtras");
+                for (TombIntegration integration : TombIntegrationRegistry.getIntegrations()) {
+                    integration.retrieveData(recipient, integrationsTag);
+                }
+
+                GraveStorageManager.markRetrieved(entry.getGraveID());
+                GraveIndex.removeGrave(target.getUUID(), entry.getGraveID());
+                recipient.sendSystemMessage(Component.literal("Tomb retrieved successfully!"));
+            } else {
+                recipient.sendSystemMessage(Component.literal("Could not load tomb data!"));
+            }
         } else {
-            recipient.sendSystemMessage(Component.literal("No graves found for " + target.getName().getString()));
+            recipient.sendSystemMessage(Component.literal("No tombs found for " + target.getName().getString()));
         }
     }
 }

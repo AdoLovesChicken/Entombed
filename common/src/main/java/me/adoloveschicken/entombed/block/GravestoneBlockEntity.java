@@ -114,9 +114,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
 
         for (int i = 0; i < itemStacks.size(); i++) {
             ItemStack itemStack = itemStacks.get(i);
-            if (!itemStack.isEmpty()) {
-                restoreItem(player, i, itemStack.copy());
-            }
+            if (!itemStack.isEmpty()) restoreItem(player, i, itemStack.copy());
         }
         itemStacks.clear();
     }
