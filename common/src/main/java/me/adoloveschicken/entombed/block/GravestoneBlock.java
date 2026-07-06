@@ -2,22 +2,26 @@ package me.adoloveschicken.entombed.block;
 
 import com.mojang.serialization.MapCodec;
 import me.adoloveschicken.entombed.config.ConfigData;
+import me.adoloveschicken.entombed.storage.GraveIndex;
+import me.adoloveschicken.entombed.storage.GraveStorageManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.*;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -29,13 +33,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiConsumer;
 
 public class GravestoneBlock extends BaseEntityBlock {
 
@@ -101,18 +105,44 @@ public class GravestoneBlock extends BaseEntityBlock {
         return super.playerWillDestroy(level, pos, state, player);
     }
 
-    // Stops entities from destroying tomb
-    public boolean canEntityDestroy(BlockState state, BlockGetter level, BlockPos pos, Entity entity) {
-        return ConfigData.tombsCanBeBrokenIndirectly;
-    }
-
-    // Stops explosions from destroying tomb
     @Override
     public float getExplosionResistance() {
-        return ConfigData.tombsCanBeBrokenIndirectly
-                ? 10F
-                : Float.MAX_VALUE;
+        return ConfigData.tombsCanBeBrokenIndirectly ? 10F : Float.MAX_VALUE;
     }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof GravestoneBlockEntity grave && !grave.beingRetrieved) {
+                if (!ConfigData.tombsCanBeBrokenIndirectly) {
+                    level.setBlock(pos, state, 3);
+                    return;
+                }
+                // Drop items
+                CompoundTag graveData = GraveStorageManager.loadGrave(grave.getGraveID());
+                if (graveData == null) graveData = grave.fallbackGraveData;
+                if (graveData != null && level instanceof ServerLevel) {
+                    NonNullList<ItemStack> itemStacks = NonNullList.withSize(GravestoneBlockEntity.INVENTORY_SIZE, ItemStack.EMPTY);
+                    ContainerHelper.loadAllItems(graveData, itemStacks, level.registryAccess());
+                    for (ItemStack stack : itemStacks) {
+                        if (!stack.isEmpty()) {
+                            Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
+                        }
+                    }
+                    GraveStorageManager.markRetrieved(grave.getGraveID());
+                    GraveIndex.removeGrave(grave.getOwnerUUID(), grave.getGraveID());
+                }
+            }
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
+    }
+
+    @Override
+    public void wasExploded(Level level, BlockPos pos, Explosion explosion) {}
+
+    @Override
+    protected void onExplosionHit(BlockState state, Level level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropConsumer) {}
 
     // Corrects block directions
     @Override

@@ -21,6 +21,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -37,7 +38,8 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     private UUID ownerUUID;
     private UUID graveID;
     private String ownerName;
-    private CompoundTag fallbackGraveData = null;
+    public boolean beingRetrieved;
+    public CompoundTag fallbackGraveData = null;
 
     public GravestoneBlockEntity(BlockPos pos, BlockState blockState) {
         super(CommonModBlockEntities.TOMB_BLOCK_ENTITY, pos, blockState);
@@ -65,6 +67,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     }
 
     public void restoreAll(Player player) {
+        beingRetrieved = true;
         CompoundTag loadedGraveData = GraveStorageManager.loadGrave(graveID);
         CompoundTag graveData = loadedGraveData == null
                 ? fallbackGraveData
@@ -86,6 +89,7 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
 
         setChanged();
         removeGraveBlock(player, true);
+        beingRetrieved = false;
     }
 
     public void storeItems(Player player, CompoundTag graveData) {
