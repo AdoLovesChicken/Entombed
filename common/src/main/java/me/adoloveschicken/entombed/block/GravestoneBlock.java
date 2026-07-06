@@ -97,12 +97,26 @@ public class GravestoneBlock extends BaseEntityBlock {
     // Returns items if grave is destroyed directly by player
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide
-                && ConfigData.tombsCanBeBrokenDirectly
-                && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
-            if (grave.getOwnerUUID() != null && grave.getGraveID() != null) grave.restoreAll(player);
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
+            if (grave.getOwnerUUID() != null && grave.getGraveID() != null) {
+                if (ConfigData.tombsCanBeBrokenDirectly) {
+                    grave.restoreAll(player);
+                    return super.playerWillDestroy(level, pos, state, player);
+                }
+                return state;
+            }
         }
         return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
+    public float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
+        if (!ConfigData.tombsCanBeBrokenDirectly && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
+            if (grave.getOwnerUUID() != null && grave.getGraveID() != null) {
+                return 0f;
+            }
+        }
+        return super.getDestroyProgress(state, player, level, pos);
     }
 
     @Override

@@ -17,6 +17,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Clearable;
@@ -128,16 +129,20 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
     }
 
     public static int decideExperience(Player player) {
-        ConfigData.DropBehavior experienceDropBehavior = ConfigData.experienceOnDeath;
-        if (experienceDropBehavior == ConfigData.DropBehavior.DEFAULT) {
-            experienceDropBehavior = ConfigData.itemsOnDeath;
+//        ConfigData.DropBehavior experienceDropBehavior = ConfigData.experienceOnDeath;
+//        if (experienceDropBehavior == ConfigData.DropBehavior.DEFAULT) {
+//            experienceDropBehavior = ConfigData.itemsOnDeath;
+//        }
+//        return switch (experienceDropBehavior) {
+//            case TOMBED -> player.totalExperience;
+//            case PARTIAL -> player.getXpNeededForNextLevel();
+//            case PERCENT_KEPT -> Math.round(player.totalExperience * ConfigData.experiencePercentKept / 100.0f);
+//            default -> 0;
+//        };
+        if (player.level() instanceof ServerLevel serverLevel) {
+            return player.getExperienceReward(serverLevel, null);
         }
-        return switch (experienceDropBehavior) {
-            case TOMBED -> player.totalExperience;
-            case PARTIAL -> player.getXpNeededForNextLevel();
-            case PERCENT_KEPT -> Math.round(player.totalExperience * ConfigData.experiencePercentKept / 100.0f);
-            default -> 0;
-        };
+        return 0;
     }
 
     public static void restoreExperience(Player player, CompoundTag graveData) {
