@@ -10,6 +10,7 @@
     import me.adoloveschicken.entombed.event.NeoDeathHandler;
     import me.adoloveschicken.entombed.integration.accessory.AccessoriesHandler;
     import me.adoloveschicken.entombed.integration.backpacked.BackpackedHandler;
+    import me.adoloveschicken.entombed.integration.cos_armor_rework.CARHandler;
     import me.adoloveschicken.entombed.integration.curios.CuriosHandler;
     import me.adoloveschicken.entombed.integration.henkelmax.HenkelMaxMigrator;
     import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
@@ -77,7 +78,8 @@
                         "backpacked", BackpackedHandler::new,
                         "satchels", SatchelsHandler::new,
                         "curios", CuriosHandler::new,
-                        "accessories", AccessoriesHandler::new
+                        "accessories", AccessoriesHandler::new,
+                        "cosmeticarmorreworked", CARHandler::new
                 );
 
                 integrations.forEach((modId, handler) -> {

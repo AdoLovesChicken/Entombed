@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TombIntegrationRegistry {
+    /* Where all integrations are stored */
     private static final List<TombIntegration> integrations = new ArrayList<>();
 
     public static void register(TombIntegration integration) {

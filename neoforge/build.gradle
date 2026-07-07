@@ -53,6 +53,7 @@ dependencies {
     runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
     modCompileOnly("io.wispforest:accessories-neoforge:${project.accessories_version}")
     modImplementation "maven.modrinth:jade:${project.jade_version}"
+    modImplementation "curse.maven:cosmetic-armor-reworked-237307:${project.cosmetic_armor_version}"
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
     modApi("dev.ryanhcode.sable:sable-common-${project.minecraft_version}:${project.sable_version}")
