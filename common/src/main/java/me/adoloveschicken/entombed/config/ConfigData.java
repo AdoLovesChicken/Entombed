@@ -19,7 +19,7 @@ public class ConfigData {
     public static boolean tombsCanPlaceInLiquid = false;
 
     // Keep items, xp:
-    public static DropBehavior itemsOnDeath = DropBehavior.TOMBED; // * For update after 2.2.0
+    public static DropBehavior itemsOnDeath = DropBehavior.TOMBED; // * For later update
     public static DropBehavior mainInvOnDeath = DropBehavior.DEFAULT; // *
     public static DropBehavior hotbarOnDeath = DropBehavior.DEFAULT; // *
     public static DropBehavior armorOnDeath = DropBehavior.DEFAULT; // *
@@ -33,7 +33,7 @@ public class ConfigData {
 
     /*-- Sable, Simulated, Aeronautics --*/
 //    public static boolean tombsCanBecomeSublevel = true;
-    public static boolean tombsFloatInLiquid = false; // overrides tombsCanPlaceInLiquid to false
+    public static boolean tombsFloatInLiquid = false; // overrides tombsCanPlaceInLiquid to true
 //    public static boolean allTombsAreSublevel = false;
 
     /*-- Other Integrations --*/
