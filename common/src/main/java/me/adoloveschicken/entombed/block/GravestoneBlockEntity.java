@@ -4,6 +4,7 @@ import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.api.TombIntegration;
 import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
 import me.adoloveschicken.entombed.config.ConfigData;
+import me.adoloveschicken.entombed.integration.galosphere.GalosphereHelper;
 import me.adoloveschicken.entombed.integration.soulbound.SoulboundHelper;
 import me.adoloveschicken.entombed.migration.GraveMigrator;
 import me.adoloveschicken.entombed.storage.GraveIndex;
@@ -101,7 +102,8 @@ public class GravestoneBlockEntity extends BlockEntity implements Clearable {
 
             ItemStack stack = player.getInventory().getItem(i);
 
-            if (!SoulboundHelper.hasSoulboundEnchantment(stack, registryAccess)) {
+            if (!SoulboundHelper.hasSoulboundEnchantment(stack, registryAccess)
+                    && !GalosphereHelper.hasPreservedComponent(stack)) {
                 itemStacks.set(i, stack.copy());
             } else {
                 player.drop(stack, true);
