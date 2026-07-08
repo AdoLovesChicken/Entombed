@@ -110,16 +110,6 @@ public class GravestoneBlock extends BaseEntityBlock {
     }
 
     @Override
-    public float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
-        if (!ConfigData.tombsCanBeBrokenDirectly && level.getBlockEntity(pos) instanceof GravestoneBlockEntity grave) {
-            if (grave.getOwnerUUID() != null && grave.getGraveID() != null) {
-                return 0f;
-            }
-        }
-        return super.getDestroyProgress(state, player, level, pos);
-    }
-
-    @Override
     public float getExplosionResistance() {
         return ConfigData.tombsCanBeBrokenIndirectly ? 10F : Float.MAX_VALUE;
     }
