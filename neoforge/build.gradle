@@ -37,7 +37,8 @@ loom {
 
 dependencies {
     neoForge "net.neoforged:neoforge:${project.neo_version}"
-
+    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
+    include 'com.moandjiezana.toml:toml4j:0.7.2'
     modCompileOnly "curse.maven:backpacked-352835:7866688"
     implementation "dev.isxander:yet-another-config-lib:${project.yacl_version_neoforge}"
     modCompileOnly "maven.modrinth:inventorio:${project.inventorio_neo_version}"

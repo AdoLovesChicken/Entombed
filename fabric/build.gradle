@@ -33,7 +33,8 @@ loom {
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-
+    include 'com.moandjiezana.toml:toml4j:0.7.2'
+    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
     modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version_fabric}"
     modCompileOnly "curse.maven:backpacked-352835:7866686"
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
