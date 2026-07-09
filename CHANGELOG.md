@@ -1,18 +1,11 @@
-## Entombed 2.2.0
+## Entombed 2.2.1
 ### Features
-- New Config
-- Config screen using YACL
-- Tombs can float in liquids using sable (toggleable)
-- Tombs can be placed inside liquids (toggleable)
+- Support for Cosmetic Armor Reworked
+- Support for Collision Damage
+- Support for Galosphere's 'Preserved' data component
 ### Changes
-- Tombs can not be retrieved by other players (toggleable)
-- Tombs can be destroyed indirectly (toggleable)
-- Tombs `.dat` files now get flagged as retrieved instead of being deleted
+- Config is now `toml` instead of `json`
 ### Fixes:
-- Tombs now store experience
-- Some issues with the end sea (and in other dimensions)
-- Sable assembling a tomb would lose its data
-- Item loss due to overriding in inventory integrations
-- Cosmetic curio support
-- Flowing liquids would destroy blockEntity (losing data)
-- Interaction with second-chance mechanics (Thanks @Warren1001)
+- Issues with tomb storage and retrieval
+- Experience would return the amount of xp the player needs for the next level, not the player's experience reward
+- Curio slots have fallbacks now (fixing some issues)
