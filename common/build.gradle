@@ -12,6 +12,7 @@ sourceSets {
 
 dependencies {
     compileOnly "org.spongepowered:mixin:0.8.5"
+    implementation 'com.moandjiezana.toml:toml4j:0.7.2'
     annotationProcessor "org.spongepowered:mixin:0.8.5"
     modCompileOnly "curse.maven:backpacked-352835:${project.backpacked_version}"
     modCompileOnly("io.wispforest:accessories-common:${project.accessories_version}")

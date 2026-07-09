@@ -17,6 +17,7 @@
     import me.adoloveschicken.entombed.integration.satchels.SatchelsHandler;
     import me.adoloveschicken.entombed.item.ModItems;
     import me.adoloveschicken.entombed.migration.GraveMigrator;
+    import me.adoloveschicken.entombed.platform.NeoForgePlatform;
     import me.adoloveschicken.entombed.storage.GraveIndex;
     import me.adoloveschicken.entombed.storage.GraveStorageManager;
     import net.minecraft.world.level.storage.LevelResource;
@@ -47,7 +48,9 @@
             NeoDeathHandler.register();
             HenkelMaxMigrator.register();
 
-            Config.load(FMLPaths.CONFIGDIR.get());
+            // Initialise config, integrations
+            NeoForgePlatform platform = new NeoForgePlatform();
+            Config.init(platform.getConfigDir());
             
             if (FMLEnvironment.dist == Dist.CLIENT) {
                 modContainer.registerExtensionPoint(
@@ -83,7 +86,7 @@
                 );
 
                 integrations.forEach((modId, handler) -> {
-                    if (ModList.get().isLoaded(modId)) TombIntegrationRegistry.register(handler.get());
+                    if (platform.isModLoaded(modId)) TombIntegrationRegistry.register(handler.get());
                 });
             });
         }
