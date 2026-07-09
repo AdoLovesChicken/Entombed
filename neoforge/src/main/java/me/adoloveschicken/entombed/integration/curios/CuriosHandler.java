@@ -11,10 +11,7 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class CuriosHandler implements TombIntegration {
 
@@ -85,49 +82,68 @@ public class CuriosHandler implements TombIntegration {
     }
 
     private static void restoreCurioItems(Player player, ICuriosItemHandler handler, ListTag tagList, boolean cosmetic) {
-        List<ItemStack> failedItems = new ArrayList<>();
+        List<ItemStack> items = placeInCurio(player, handler, tagList, cosmetic);
+        if (!items.isEmpty()) {
+            for (ItemStack item : items) {
+                if (!player.getInventory().add(item)) {
+                    player.drop(item, false);
+                }
+            }
+        }
+    }
+
+    private static List<ItemStack> placeInCurio(Player player, ICuriosItemHandler handler, ListTag tagList, boolean cosmetic) {
+        // curio, slotType, slotIndex
+        List<Curio> curios = new ArrayList<>();
 
         for (int i = 0; i < tagList.size(); i++) {
             CompoundTag itemEntry = tagList.getCompound(i);
             String slotType = itemEntry.getString("SlotType");
             int slotIndex = itemEntry.getInt("SlotIndex");
             ItemStack item = ItemStack.parseOptional(player.level().registryAccess(), itemEntry.getCompound("Item"));
-            ICurioStacksHandler stacksHandler = handler.getCurios().get(slotType);
-
-            if (stacksHandler != null) {
-                IItemHandler stacks = cosmetic && stacksHandler.hasCosmetic() ? stacksHandler.getCosmeticStacks() : stacksHandler.getStacks();
-                if (slotIndex >= 0 && slotIndex < stacks.getSlots() && stacks.getStackInSlot(slotIndex).isEmpty()) {
-                    if (stacks instanceof IItemHandlerModifiable modifiable) {
-                        modifiable.setStackInSlot(slotIndex, item);
-                    }
-                    continue;
-                }
-            }
-            failedItems.add(item);
+            curios.add(new Curio(item, slotType, slotIndex));
         }
 
-        for (ItemStack item : new ArrayList<>(failedItems)) {
-            for (ICurioStacksHandler stacksHandler : handler.getCurios().values()) {
-                IItemHandler stacks = cosmetic && stacksHandler.hasCosmetic() ? stacksHandler.getCosmeticStacks() : stacksHandler.getStacks();
-                for (int i = 0; i < stacks.getSlots(); i++) {
-                    if (stacks.getStackInSlot(i).isEmpty()) {
-                        if (stacks instanceof IItemHandlerModifiable modifiable) {
-                            modifiable.setStackInSlot(i, item);
+        for (boolean changed = true; changed;) {
+            changed = false;
+            for (int i = 0; i < curios.size(); i++) {
+                Curio curio = curios.get(i);
+                ICurioStacksHandler stacksHandler = handler.getCurios().get(curio.slotType);
+                if (stacksHandler != null) {
+                    IItemHandler stacks = cosmetic && stacksHandler.hasCosmetic() ? stacksHandler.getCosmeticStacks() : stacksHandler.getStacks();
+                    int slotIndex = curio.slotIndex;
+
+                    if (slotIndex >= 0 && slotIndex < stacks.getSlots() && stacks.getStackInSlot(slotIndex).isEmpty()
+                            && stacks instanceof IItemHandlerModifiable modifiable) {
+                        modifiable.setStackInSlot(slotIndex, curio.stack);
+                        changed = true;
+                        curios.remove(curio);
+                        i--;
+                    } else if (stacks instanceof IItemHandlerModifiable modifiable) {
+                        for (int slot = 0; slot < stacks.getSlots(); slot++) {
+                            if (stacks.getStackInSlot(slot).isEmpty()) {
+                                modifiable.setStackInSlot(slot, curio.stack);
+                                changed = true;
+                                curios.remove(curio);
+                                i--;
+                                break;
+                            }
                         }
-                        failedItems.remove(item);
-                        break;
                     }
                 }
-                if (!failedItems.contains(item)) break;
             }
         }
 
-        for (ItemStack item : failedItems) {
-            if (!player.getInventory().add(item)) {
-                player.drop(item, false);
-            }
+        List<ItemStack> items = new ArrayList<>();
+        for (Curio curio : curios) {
+            items.add(curio.stack);
         }
+
+        return items;
     }
+
+    private record Curio(ItemStack stack, String slotType, Integer slotIndex) {}
+
 
     @Override
     public String integrationId() {
