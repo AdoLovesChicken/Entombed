@@ -67,12 +67,12 @@ public class YaclConfigBuilder {
                         .build())
                 .category(ConfigCategory.createBuilder()
                         .name(Component.translatable("entombed.gui.category.integrations"))
-//                        .option(boolOption("entombed.config.tombsCanBecomeSublevel",
-//                                () -> ConfigData.tombsCanBecomeSublevel, val -> ConfigData.tombsCanBecomeSublevel = val))
+                        .option(boolOption("entombed.config.tombsCanBecomeSublevel",
+                                () -> ConfigData.tombsCanBecomeSublevel, val -> ConfigData.tombsCanBecomeSublevel = val))
                         .option(boolOption("entombed.config.tombsFloatInLiquid",
                                 () -> ConfigData.tombsFloatInLiquid, val -> ConfigData.tombsFloatInLiquid = val))
-//                        .option(boolOption("entombed.config.allTombsAreSublevel",
-//                                () -> ConfigData.allTombsAreSublevel, val -> ConfigData.allTombsAreSublevel = val))
+                        .option(boolOption("entombed.config.allTombsAreSublevel",
+                                () -> ConfigData.allTombsAreSublevel, val -> ConfigData.allTombsAreSublevel = val))
                         .build())
                 .build();
         return config.generateScreen(parent);

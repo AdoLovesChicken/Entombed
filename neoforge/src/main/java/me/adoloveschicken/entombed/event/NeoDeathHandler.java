@@ -1,6 +1,7 @@
 package me.adoloveschicken.entombed.event;
 
 import me.adoloveschicken.entombed.Entombed;
+import me.adoloveschicken.entombed.config.ConfigData;
 import me.adoloveschicken.entombed.integration.sable.SableAssemblyHelper;
 import me.adoloveschicken.entombed.integration.simulated.EndSeaHandler;
 import me.adoloveschicken.entombed.platform.PlatformRegistry;
@@ -28,7 +29,8 @@ public class NeoDeathHandler {
 
     private static void assembleTombInEndSea(ServerPlayer player, BlockPos gravePos) {
         try {
-            if (PlatformRegistry.get().isModLoaded("aeronautics")
+            boolean aeroLoaded = PlatformRegistry.get().isModLoaded("aeronautics");
+            if (aeroLoaded && ConfigData.tombsCanBecomeSublevel && !ConfigData.allTombsAreSublevel
                     && gravePos != null && EndSeaHandler.hasEndSea(player.serverLevel())) {
                 ServerLevel level = player.serverLevel();
                 BlockPos adjustedPos = gravePos;

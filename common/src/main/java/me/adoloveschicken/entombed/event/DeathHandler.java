@@ -7,7 +7,6 @@ import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.config.ConfigData;
 import me.adoloveschicken.entombed.integration.sable.SableAssemblyHelper;
 import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
-import me.adoloveschicken.entombed.platform.EntombedPlatform;
 import me.adoloveschicken.entombed.platform.PlatformRegistry;
 import me.adoloveschicken.entombed.storage.GraveEntry;
 import me.adoloveschicken.entombed.storage.GraveIndex;
@@ -19,7 +18,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Objects;
 
@@ -62,10 +62,10 @@ public class DeathHandler {
             level.playSound(null, pos, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.5f, 0.8f);
             level.sendParticles(ParticleTypes.SOUL, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, 0.3, 0.3, 0.3, 0.05);
         }
-
-        if (sableLoaded && ConfigData.tombsFloatInLiquid && liquidCheck)
-            SableAssemblyHelper.assembleBlocks(level, pos);
-
+        if (sableLoaded && ConfigData.tombsCanBecomeSublevel) {
+            if (ConfigData.allTombsAreSublevel || (ConfigData.tombsFloatInLiquid && liquidCheck))
+                SableAssemblyHelper.assembleBlocks(level, pos);
+        }
         return pos;
     }
 

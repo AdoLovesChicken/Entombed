@@ -32,9 +32,9 @@ public class ConfigData {
     public static short experiencePercentKept = 100; // *
 
     /*-- Sable, Simulated, Aeronautics --*/
-//    public static boolean tombsCanBecomeSublevel = true;
+    public static boolean tombsCanBecomeSublevel = true;
     public static boolean tombsFloatInLiquid = true; // overrides tombsCanPlaceInLiquid to true
-//    public static boolean allTombsAreSublevel = true;
+    public static boolean allTombsAreSublevel = true;
 
     /*-- Other Integrations --*/
 
