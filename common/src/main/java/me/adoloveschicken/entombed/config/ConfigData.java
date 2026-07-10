@@ -16,7 +16,7 @@ public class ConfigData {
     public static boolean tombsCanBeBrokenIndirectly = false;
 
     // Placement
-    public static boolean tombsCanPlaceInLiquid = false;
+    public static boolean tombsCanPlaceInLiquid = true;
 
     // Keep items, xp:
     public static DropBehavior itemsOnDeath = DropBehavior.TOMBED; // * For later update
@@ -33,8 +33,8 @@ public class ConfigData {
 
     /*-- Sable, Simulated, Aeronautics --*/
 //    public static boolean tombsCanBecomeSublevel = true;
-    public static boolean tombsFloatInLiquid = false; // overrides tombsCanPlaceInLiquid to true
-//    public static boolean allTombsAreSublevel = false;
+    public static boolean tombsFloatInLiquid = true; // overrides tombsCanPlaceInLiquid to true
+//    public static boolean allTombsAreSublevel = true;
 
     /*-- Other Integrations --*/
 
