@@ -6,11 +6,6 @@ base {
     archivesName = "${mod_id}+neo"
 }
 
-configurations {
-    includeEmbedded
-    include.extendsFrom(includeEmbedded)
-}
-
 sourceSets {
     main {
         java {
