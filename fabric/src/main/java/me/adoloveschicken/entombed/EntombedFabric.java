@@ -13,7 +13,9 @@ import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
 import me.adoloveschicken.entombed.integration.trinkets.TrinketsHandler;
 import me.adoloveschicken.entombed.item.ModItems;
 import me.adoloveschicken.entombed.migration.GraveMigrator;
+import me.adoloveschicken.entombed.platform.EntombedPlatform;
 import me.adoloveschicken.entombed.platform.FabricPlatform;
+import me.adoloveschicken.entombed.platform.PlatformRegistry;
 import me.adoloveschicken.entombed.storage.GraveIndex;
 import me.adoloveschicken.entombed.storage.GraveStorageManager;
 import net.fabricmc.api.ModInitializer;
@@ -42,7 +44,8 @@ public class EntombedFabric implements ModInitializer {
         );
 
         // Loading config, integrations
-        FabricPlatform platform = new FabricPlatform();
+        PlatformRegistry.init(new FabricPlatform());
+        EntombedPlatform platform = PlatformRegistry.get();
         Config.init(platform.getConfigDir());
 
         integrations.forEach((modId, handler) -> {

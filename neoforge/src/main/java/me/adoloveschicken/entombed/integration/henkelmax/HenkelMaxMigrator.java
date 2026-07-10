@@ -5,6 +5,7 @@ import me.adoloveschicken.entombed.block.GravestoneBlock;
 import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.block.ModBlocks;
 import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
+import me.adoloveschicken.entombed.platform.PlatformRegistry;
 import me.adoloveschicken.entombed.storage.GraveStorageManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,7 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -102,7 +102,7 @@ public class HenkelMaxMigrator {
     }
 
     private static void populateGrave(BlockPos gravePos, ServerLevel level, UUID ownerUUID, String ownerName, CompoundTag deathData, Path datFile) {
-        if (ModList.get().isLoaded("sable")) {
+        if (PlatformRegistry.get().isModLoaded("sable")) {
             gravePos = SableGravePositionHandler.getPositionFromWorld(level, gravePos);
         }
         level.setBlock(gravePos, ModBlocks.TOMB.get().defaultBlockState().setValue(GravestoneBlock.FACING, Direction.NORTH), 3);
@@ -116,7 +116,7 @@ public class HenkelMaxMigrator {
             loadInventory(deathData.getList("OffHandInventory", Tag.TAG_COMPOUND), OFFHAND_SLOT, itemStacks);
 
             CompoundTag extraInventoriesTag = new CompoundTag();
-            if (ModList.get().isLoaded("curios")) {
+            if (PlatformRegistry.get().isModLoaded("curios")) {
                 extraInventoriesTag = migrate(deathData.getList("Items", Tag.TAG_COMPOUND), level);
             }
 

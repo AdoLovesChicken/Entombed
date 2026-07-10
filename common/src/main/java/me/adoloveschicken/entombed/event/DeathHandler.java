@@ -7,6 +7,8 @@ import me.adoloveschicken.entombed.block.GravestoneBlockEntity;
 import me.adoloveschicken.entombed.config.ConfigData;
 import me.adoloveschicken.entombed.integration.sable.SableAssemblyHelper;
 import me.adoloveschicken.entombed.integration.sable.SableGravePositionHandler;
+import me.adoloveschicken.entombed.platform.EntombedPlatform;
+import me.adoloveschicken.entombed.platform.PlatformRegistry;
 import me.adoloveschicken.entombed.storage.GraveEntry;
 import me.adoloveschicken.entombed.storage.GraveIndex;
 import net.minecraft.core.BlockPos;
@@ -25,13 +27,14 @@ public class DeathHandler {
     private static int minY;
     private static int maxY;
 
-    public static BlockPos onPlayerDeath(ServerPlayer player, boolean sableLoaded) {
+    public static BlockPos onPlayerDeath(ServerPlayer player) {
         if (keepInvEnabled(player)) return null;
 
         ServerLevel level = player.serverLevel();
         minY = level.getMinBuildHeight();
         maxY = level.getMaxBuildHeight() - 1;
 
+        boolean sableLoaded = PlatformRegistry.get().isModLoaded("sable");
         boolean onSubLevel = sableLoaded && SableGravePositionHandler.isOnSubLevel(player);
 
         BlockPos pos = onSubLevel

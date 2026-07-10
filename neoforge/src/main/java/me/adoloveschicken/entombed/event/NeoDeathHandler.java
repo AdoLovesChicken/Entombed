@@ -3,6 +3,7 @@ package me.adoloveschicken.entombed.event;
 import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.integration.sable.SableAssemblyHelper;
 import me.adoloveschicken.entombed.integration.simulated.EndSeaHandler;
+import me.adoloveschicken.entombed.platform.PlatformRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,13 +17,10 @@ import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 
 public class NeoDeathHandler {
 
-    private static final boolean SABLE_LOADED = ModList.get().isLoaded("sable");
-    private static final boolean AERONAUTICS_LOADED = ModList.get().isLoaded("aeronautics");
-
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            BlockPos gravePos = DeathHandler.onPlayerDeath(player, SABLE_LOADED);
+            BlockPos gravePos = DeathHandler.onPlayerDeath(player);
             player.skipDropExperience();
             assembleTombInEndSea(player, gravePos);
         }
@@ -30,7 +28,8 @@ public class NeoDeathHandler {
 
     private static void assembleTombInEndSea(ServerPlayer player, BlockPos gravePos) {
         try {
-            if (AERONAUTICS_LOADED && gravePos != null && EndSeaHandler.hasEndSea(player.serverLevel())) {
+            if (PlatformRegistry.get().isModLoaded("aeronautics")
+                    && gravePos != null && EndSeaHandler.hasEndSea(player.serverLevel())) {
                 ServerLevel level = player.serverLevel();
                 BlockPos adjustedPos = gravePos;
 

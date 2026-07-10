@@ -1,5 +1,5 @@
     package me.adoloveschicken.entombed;
-    
+
     import me.adoloveschicken.entombed.api.TombIntegration;
     import me.adoloveschicken.entombed.api.TombIntegrationRegistry;
     import me.adoloveschicken.entombed.block.ModBlockEntities;
@@ -17,24 +17,24 @@
     import me.adoloveschicken.entombed.integration.satchels.SatchelsHandler;
     import me.adoloveschicken.entombed.item.ModItems;
     import me.adoloveschicken.entombed.migration.GraveMigrator;
+    import me.adoloveschicken.entombed.platform.EntombedPlatform;
     import me.adoloveschicken.entombed.platform.NeoForgePlatform;
+    import me.adoloveschicken.entombed.platform.PlatformRegistry;
     import me.adoloveschicken.entombed.storage.GraveIndex;
     import me.adoloveschicken.entombed.storage.GraveStorageManager;
     import net.minecraft.world.level.storage.LevelResource;
     import net.neoforged.api.distmarker.Dist;
     import net.neoforged.bus.api.IEventBus;
     import net.neoforged.fml.ModContainer;
-    import net.neoforged.fml.ModList;
     import net.neoforged.fml.common.Mod;
     import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
     import net.neoforged.fml.loading.FMLEnvironment;
-    import net.neoforged.fml.loading.FMLPaths;
     import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
     import net.neoforged.neoforge.common.NeoForge;
     import net.neoforged.neoforge.event.RegisterCommandsEvent;
     import net.neoforged.neoforge.event.server.ServerStartingEvent;
     import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-    
+
     import java.nio.file.Path;
     import java.util.Map;
     import java.util.function.Supplier;
@@ -49,7 +49,8 @@
             HenkelMaxMigrator.register();
 
             // Initialise config, integrations
-            NeoForgePlatform platform = new NeoForgePlatform();
+            PlatformRegistry.init(new NeoForgePlatform());
+            EntombedPlatform platform = PlatformRegistry.get();
             Config.init(platform.getConfigDir());
             
             if (FMLEnvironment.dist == Dist.CLIENT) {
