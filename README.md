@@ -10,7 +10,20 @@
 - Compatibility with [Sable](https://modrinth.com/mod/sable) and [Create Aeronautics](https://modrinth.com/mod/create-aeronautics)
 - Migration from [HenkelMax's GraveStone Mod](https://modrinth.com/mod/gravestone-mod) and [Gravestone x Curios API Compat](https://modrinth.com/mod/gravestone-x-curios-api-compat)
 - Combatible with many inventory mods
-For a more extensive list of integrations, please check the [readme](https://github.com/AdoLovesChicken/Entombed/blob/dev/README.md).
+
+### Integrations:
+- Sable
+- Create Aeronautics
+- Satchels
+- Curios
+- Accessories
+- Soulbound
+- Backpacked
+- Galosphere
+- Inventorio
+- Jade
+- Trinkets
+- Cosmetic Armor Reworked
 
 ### Installation
 You can either:
