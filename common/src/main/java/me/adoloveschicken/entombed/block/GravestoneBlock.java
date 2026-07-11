@@ -15,8 +15,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.*;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -41,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
 
+@SuppressWarnings({"NullableProblems"})
 public class GravestoneBlock extends BaseEntityBlock {
 
     private static final VoxelShape NORTH_SOUTH_SHAPE = Block.box(1, 0, 5, 15, 14, 11);
@@ -140,6 +139,12 @@ public class GravestoneBlock extends BaseEntityBlock {
             }
         }
         super.onRemove(state, level, pos, newState, isMoving);
+    }
+
+    @Override
+    protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {
+        if (ConfigData.tombsCanBeBrokenDirectly) return 0;
+        return super.getDestroyProgress(state, player, level, pos);
     }
 
     @Override
