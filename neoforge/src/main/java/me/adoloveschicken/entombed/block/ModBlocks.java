@@ -22,8 +22,7 @@ public class ModBlocks {
 
     public static void register(IEventBus eventBus) {
         BLOCKS.register(eventBus);
-        eventBus.addListener((FMLCommonSetupEvent event) -> {
-            CommonModBlocks.TOMB = TOMB.get();
-        });
+        eventBus.addListener((FMLCommonSetupEvent event) ->
+                CommonModBlocks.TOMB = TOMB.get());
     }
 }

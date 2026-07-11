@@ -12,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
 public class SableGravePositionHandler {
 
     /*
-    If player is on/in a sub-level, return the players coordinates relative to the sub-level,
+    If player is on/in a sublevel, return the players coordinates relative to the sublevel,
     otherwise, return their real-world coordinates
      */
     public static BlockPos getPosition(ServerPlayer player) {
@@ -30,14 +30,14 @@ public class SableGravePositionHandler {
         return result;
     }
 
-    // Checks if a player is on/in a sub-level
+    // Checks if a player is on/in a sublevel
     public static boolean isOnSubLevel(ServerPlayer player) {
         SubLevelAccess subLevel = SableCompanion.INSTANCE.getTrackingOrVehicleSubLevel(player);
         return subLevel != null;
     }
 
     /*
-    If a sub-level is found in a BlockPos, return the appropriate coordinates relative to sub-level,
+    If a sublevel is found in a BlockPos, return the appropriate coordinates relative to sublevel,
     otherwise, return the real-world coordinates
      */
     public static BlockPos getPositionFromWorld(ServerLevel level, BlockPos worldPos) {
@@ -61,7 +61,7 @@ public class SableGravePositionHandler {
         return localPos;
     }
 
-    // Corrects direction mismatch between sub-levels and the real-world
+    // Corrects direction mismatch between sublevels and the real-world
     public static Direction getLocalFacing(ServerPlayer player) {
         SubLevelAccess subLevel = SableCompanion.INSTANCE.getTrackingOrVehicleSubLevel(player);
         if (subLevel == null) return player.getDirection().getOpposite();
@@ -69,7 +69,7 @@ public class SableGravePositionHandler {
         // Get the player's world-space facing as a normal vector
         Vec3 worldFacing = Vec3.directionFromRotation(player.getXRot(), player.getYRot());
 
-        // Transform it into the sub-level's local space using the pose's inverse normal transform
+        // Transform it into the sublevel's local space using the pose's inverse normal transform
         Vec3 localFacing = subLevel.logicalPose().transformNormalInverse(worldFacing);
 
         // Snap to nearest cardinal direction

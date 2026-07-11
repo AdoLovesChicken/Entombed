@@ -72,9 +72,8 @@
                 GraveMigrator.reset();
             });
 
-            NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> {
-                TombCommand.register(event.getDispatcher());
-            });
+            NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event ->
+                    TombCommand.register(event.getDispatcher()));
 
             modEventBus.addListener((FMLCommonSetupEvent event) -> {
                 Map<String, Supplier<TombIntegration>> integrations = Map.of(

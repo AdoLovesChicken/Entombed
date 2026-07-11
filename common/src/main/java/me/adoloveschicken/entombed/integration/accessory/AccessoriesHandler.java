@@ -3,7 +3,6 @@ package me.adoloveschicken.entombed.integration.accessory;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import me.adoloveschicken.entombed.api.TombIntegration;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;

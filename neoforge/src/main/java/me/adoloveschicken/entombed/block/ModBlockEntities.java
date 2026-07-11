@@ -21,8 +21,7 @@ public class ModBlockEntities {
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITY_TYPES.register(eventBus);
-        eventBus.addListener((FMLCommonSetupEvent event) -> {
-            CommonModBlockEntities.TOMB_BLOCK_ENTITY = NEO_TOMB_BLOCK_ENTITY.get();
-        });
+        eventBus.addListener((FMLCommonSetupEvent event) ->
+                CommonModBlockEntities.TOMB_BLOCK_ENTITY = NEO_TOMB_BLOCK_ENTITY.get());
     }
 }

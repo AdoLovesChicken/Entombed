@@ -11,10 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PlayerHeadItem;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.phys.Vec2;
-import snownee.jade.addon.vanilla.PlayerHeadProvider;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -95,7 +93,7 @@ public enum TombComponentProvider implements IBlockComponentProvider, IServerDat
             data.putString("Owner", name);
             data.putUUID("OwnerUUID", tomb.getOwnerUUID());
 
-            PropertyMap propertyMap = profile.get().getProperties();;
+            PropertyMap propertyMap = profile.get().getProperties();
             if (propertyMap.containsKey("textures")) {
                 Property texture = propertyMap.get("textures").iterator().next();
                 data.putString("TextureValue", texture.value());

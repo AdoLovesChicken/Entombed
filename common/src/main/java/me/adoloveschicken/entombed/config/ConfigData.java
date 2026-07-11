@@ -3,6 +3,7 @@ package me.adoloveschicken.entombed.config;
 import dev.isxander.yacl3.api.NameableEnum;
 import net.minecraft.network.chat.Component;
 
+@SuppressWarnings("unused")
 public class ConfigData {
     public ConfigData() {
     }

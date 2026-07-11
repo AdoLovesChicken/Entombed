@@ -1,12 +1,12 @@
 package me.adoloveschicken.entombed.integration.backpacked;
 
 import com.mrcrayfish.backpacked.BackpackHelper;
-import io.wispforest.accessories.api.AccessoriesContainer;
 import me.adoloveschicken.entombed.api.TombIntegration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
 import static com.mrcrayfish.backpacked.BackpackHelper.setBackpackStack;
 
 public class BackpackedHandler implements TombIntegration {

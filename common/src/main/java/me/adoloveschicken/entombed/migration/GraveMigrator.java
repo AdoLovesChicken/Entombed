@@ -13,7 +13,7 @@ public class GraveMigrator {
 
     /* ---NOTE--- */
     // If you are looking for the code for HenkelMax migration
-    // (and the curios addon), please check the neoforge package
+    // (and the curios addon), please check the NeoForge package
     // under entombed/integration/henkelmax
     //
     // If you are looking for the code for the migration from

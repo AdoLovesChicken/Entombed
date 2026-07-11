@@ -19,11 +19,4 @@ public class EndSeaHandler {
         }
         return 0; // Ultimately should be checked by hasEndSea...
     }
-
-    public static void assembleEndSea(ServerLevel level, BlockPos pos) {
-        if (!hasEndSea(level)) return;
-
-        BlockPos floorPos = new BlockPos(pos.getX(), level.getMinBuildHeight() + 1, pos.getZ());
-        SableAssemblyHelper.assembleBlocks(level, floorPos);
-    }
 }

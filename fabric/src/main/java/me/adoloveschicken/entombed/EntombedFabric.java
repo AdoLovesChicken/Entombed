@@ -65,8 +65,7 @@ public class EntombedFabric implements ModInitializer {
             GraveMigrator.reset();
         });
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            TombCommand.register(dispatcher);
-        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+                TombCommand.register(dispatcher));
     }
 }
