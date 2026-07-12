@@ -128,7 +128,7 @@ publishMods {
     github {
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
         repository = "AdoLovesChicken/Entombed"
-        commitish = "dev"
+        commitish = providers.environmentVariable("GITHUB_SHA").orElse("dev")
         tagName = "${project.version}"
         file = project(":fabric").remapJar.archiveFile
         additionalFiles.from(
