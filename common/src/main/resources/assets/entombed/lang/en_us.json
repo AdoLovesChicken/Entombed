@@ -13,7 +13,7 @@
 
   "entombed.config.tombsHaveCollision": "Tombs Have Collision",
   "entombed.config.requireOpForRetrieve": "Require OP for Retrieve",
-  "entombed.config.tombsCanBeBrokenDirectly": "Tombs can be Broken by Players",
+  "entombed.config.tombsCanBeBrokenDirectly": "Tombs can be Broken by other Players",
   "entombed.config.tombsCanBeBrokenIndirectly": "Tombs can be Broken Indirectly",
 
   "entombed.config.tombsCanPlaceInLiquid": "Tombs can be Placed in Liquid",
