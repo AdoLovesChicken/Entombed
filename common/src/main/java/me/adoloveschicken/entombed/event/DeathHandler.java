@@ -1,5 +1,6 @@
 package me.adoloveschicken.entombed.event;
 
+import com.mrcrayfish.backpacked.core.ModBlocks;
 import me.adoloveschicken.entombed.Entombed;
 import me.adoloveschicken.entombed.block.CommonModBlocks;
 import me.adoloveschicken.entombed.block.GravestoneBlock;
@@ -20,6 +21,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.Objects;
 
@@ -47,7 +49,11 @@ public class DeathHandler {
 
         boolean liquidCheck = !level.getBlockState(pos).getFluidState().isEmpty();
 
-        level.setBlock(pos, CommonModBlocks.TOMB.defaultBlockState().setValue(GravestoneBlock.FACING, deathFacing), 3);
+        boolean shouldWaterlog = level.getFluidState(pos).getType() == Fluids.WATER;
+        BlockState graveState = CommonModBlocks.TOMB.defaultBlockState()
+                .setValue(GravestoneBlock.FACING, deathFacing)
+                .setValue(GravestoneBlock.WATERLOGGED, shouldWaterlog);
+        level.setBlock(pos, graveState, 3);
         if (level.getBlockEntity(pos) instanceof GravestoneBlockEntity gravestoneBlockEntity) {
             gravestoneBlockEntity.storeAll(player);
             GraveEntry entry = new GraveEntry(
