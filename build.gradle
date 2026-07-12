@@ -36,7 +36,12 @@ subprojects {
             }
         }
 
-        maven { url = "https://cursemaven.com" }
+        maven {
+            url = "https://cursemaven.com"
+            content {
+                includeGroup "curse.maven"
+            }
+        }
         maven { url = "https://maven.createmod.net" }
         maven { url = "https://maven.ithundxr.dev/snapshots" }
         maven { url = "https://maven.shedaniel.me/" }
