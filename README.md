@@ -24,6 +24,7 @@
 - Jade
 - Trinkets
 - Cosmetic Armor Reworked
+- Extractrooms
 
 ### Installation
 You can either:

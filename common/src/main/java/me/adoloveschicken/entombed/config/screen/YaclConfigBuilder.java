@@ -1,15 +1,20 @@
 package me.adoloveschicken.entombed.config.screen;
 
-import dev.isxander.yacl3.api.*;
+import dev.isxander.yacl3.api.ConfigCategory;
+import dev.isxander.yacl3.api.ListOption;
+import dev.isxander.yacl3.api.Option;
+import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
 import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
+import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import me.adoloveschicken.entombed.config.Config;
 import me.adoloveschicken.entombed.config.ConfigData;
 import me.adoloveschicken.entombed.config.ConfigData.DropBehavior;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -33,6 +38,9 @@ public class YaclConfigBuilder {
                                     ConfigData.tombsCanPlaceInLiquid = val;
                                     if (val) ConfigData.tombsFloatInLiquid = true;
                                 }))
+                        .group(listOption("entombed.config.dimensionBlacklist",
+                                () -> ConfigData.dimensionBlacklist,
+                                val -> ConfigData.dimensionBlacklist = val))
 //                        .group(OptionGroup.createBuilder()
 //                                .name(Component.translatable("entombed.gui.group.drop_behaviors"))
 //                                .option(dropBehaviorOption("entombed.config.itemsOnDeath",
@@ -85,6 +93,15 @@ public class YaclConfigBuilder {
                 .controller(opt -> BooleanControllerBuilder.create(opt)
                         .formatValue(val -> Component.translatable(val ? "options.on" : "options.off"))
                         .coloured(true))
+                .build();
+    }
+
+    private static ListOption<String> listOption(String key, Supplier<List<String>> getter, Consumer<List   <String>> setter) {
+        return ListOption.<String>createBuilder()
+                .name(Component.translatable(key))
+                .binding(List.of(), getter, setter)
+                .controller(StringControllerBuilder::create)
+                .initial("")
                 .build();
     }
 

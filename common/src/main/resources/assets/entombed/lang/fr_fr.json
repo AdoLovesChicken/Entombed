@@ -31,6 +31,7 @@
   "entombed.config.tombsCanBecomeSublevel": "Les tombes peuvent devenir des sous-niveaux",
   "entombed.config.tombsFloatInLiquid": "Les tombes flottent dans les liquides",
   "entombed.config.allTombsAreSublevel": "Toutes les tombes sont des sous-niveaux",
+  "entombed.config.dimensionBlacklist": "Blacklist des dimensions",
 
   "entombed.config.dropBehavior.KEPT": "Conservé dans l'inventaire",
   "entombed.config.dropBehavior.TOMBED": "Stocké dans la tombe",

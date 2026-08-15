@@ -3,12 +3,18 @@ package me.adoloveschicken.entombed.config;
 import dev.isxander.yacl3.api.NameableEnum;
 import net.minecraft.network.chat.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SuppressWarnings("unused")
 public class ConfigData {
     public ConfigData() {
     }
 
-    public static boolean usedYACL = true;
+    // v1-3 -> <1.3.0 (json or toml)
+    // v4 -> 1.3.0 (toml)
+    public static short configVersion = 4;
+
     /*-- Vanilla --*/
     // Tomb settings
     public static boolean tombsHaveCollision = true;
@@ -18,6 +24,7 @@ public class ConfigData {
 
     // Placement
     public static boolean tombsCanPlaceInLiquid = true;
+    public static List<String> dimensionBlacklist = new ArrayList<>(List.of("example:example", "extractrooms:backrooms"));
 
     // Keep items, xp:
     public static DropBehavior itemsOnDeath = DropBehavior.TOMBED; // * For later update

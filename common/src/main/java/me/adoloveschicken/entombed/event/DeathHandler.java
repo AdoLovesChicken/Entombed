@@ -30,9 +30,11 @@ public class DeathHandler {
     private static int maxY;
 
     public static BlockPos onPlayerDeath(ServerPlayer player) {
-        if (keepInvEnabled(player)) return null;
-
         ServerLevel level = player.serverLevel();
+        String dimensionId = level.dimension().location().toString();
+        if (keepInvEnabled(player) || ConfigData.dimensionBlacklist.contains(dimensionId))
+            return null;
+
         minY = level.getMinBuildHeight();
         maxY = level.getMaxBuildHeight() - 1;
 
@@ -58,7 +60,7 @@ public class DeathHandler {
             gravestoneBlockEntity.storeAll(player);
             GraveEntry entry = new GraveEntry(
                     gravestoneBlockEntity.getGraveID(),
-                    level.dimension().location().toString(),
+                    dimensionId,
                     pos.getX(),
                     pos.getY(),
                     pos.getZ(),
@@ -151,8 +153,10 @@ public class DeathHandler {
         return false;
     }
 
+    // return true when keepinv = false and dimension isn't in blacklist
     public static boolean onPlayerDrops(ServerPlayer player) {
-        return !keepInvEnabled(player);
+        String dimId = player.serverLevel().dimension().location().toString();
+        return !keepInvEnabled(player) && !ConfigData.dimensionBlacklist.contains(dimId);
     }
 
     private static boolean keepInvEnabled(ServerPlayer player) {
