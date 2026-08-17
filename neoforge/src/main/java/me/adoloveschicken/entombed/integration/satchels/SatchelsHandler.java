@@ -50,6 +50,6 @@ public class SatchelsHandler implements TombIntegration {
 
     @Override
     public String integrationId() {
-        return "satchels";
+        return "satchels_v1";
     }
 }

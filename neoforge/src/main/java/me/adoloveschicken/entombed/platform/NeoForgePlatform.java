@@ -1,5 +1,6 @@
 package me.adoloveschicken.entombed.platform;
 
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 
@@ -12,5 +13,12 @@ public class NeoForgePlatform implements EntombedPlatform {
 
     public boolean isModLoaded(String modId) {
         return ModList.get().isLoaded(modId);
+    }
+
+    public String getModVersion(String modId) {
+        ModContainer container = ModList.get().getModContainerById(modId).orElse(null);
+        return container != null
+                ? container.getModInfo().getVersion().toString()
+                : null;
     }
 }

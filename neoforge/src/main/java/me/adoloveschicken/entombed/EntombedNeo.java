@@ -14,7 +14,7 @@
     import me.adoloveschicken.entombed.integration.curios.CuriosHandler;
     import me.adoloveschicken.entombed.integration.henkelmax.HenkelMaxMigrator;
     import me.adoloveschicken.entombed.integration.inventorio.InventorioHandler;
-    import me.adoloveschicken.entombed.integration.satchels.SatchelsHandler;
+    import me.adoloveschicken.entombed.integration.satchels.SatchelsBootstrap;
     import me.adoloveschicken.entombed.item.ModItems;
     import me.adoloveschicken.entombed.migration.GraveMigrator;
     import me.adoloveschicken.entombed.platform.EntombedPlatform;
@@ -79,7 +79,6 @@
                 Map<String, Supplier<TombIntegration>> integrations = Map.of(
                         "inventorio", InventorioHandler::new,
                         "backpacked", BackpackedHandler::new,
-                        "satchels", SatchelsHandler::new,
                         "curios", CuriosHandler::new,
                         "accessories", AccessoriesHandler::new,
                         "cosmeticarmorreworked", CARHandler::new
@@ -88,6 +87,11 @@
                 integrations.forEach((modId, handler) -> {
                     if (platform.isModLoaded(modId)) TombIntegrationRegistry.register(handler.get());
                 });
+
+                // Determines use of Satchels v1 integration; Satchels v2 comes with built-in integration
+                if (platform.isModLoaded("satchels") && platform.getModVersion("satchels").startsWith("1"))
+                    SatchelsBootstrap.register();
+
             });
         }
     }
